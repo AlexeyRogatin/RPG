@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Radik</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        @font-face {
+            font-family: Big;
+            src: url("./fonts/big-shot.ttf");
+        }
+
+        #canvas {
+            image-rendering: optimizeSpeed;
+            /* Older versions of FF          */
+            image-rendering: -moz-crisp-edges;
+            /* FF 6.0+                       */
+            image-rendering: -webkit-optimize-contrast;
+            /* Safari                        */
+            image-rendering: -o-crisp-edges;
+            /* OS X & Windows Opera (12.02+) */
+            image-rendering: pixelated;
+            /* Awesome future-browsers       */
+            -ms-interpolation-mode: nearest-neighbor;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script src="localization.js"></script>
+    <script src="math.js"></script>
+    <script src="drawing.js"></script>
+    <script src="input.js"></script>
+    <script src="timers.js"></script>
+    <script src="resources.js"></script>
+    <script src="collisions.js"></script>
+    <script src="music.js"></script>
+    <script src="enemies.js"></script>
+    <script src="choiseBox.js"></script>
+    <script src="textBox.js"></script>
+    <script src="hitBox.js"></script>
+    <script src="fight.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
