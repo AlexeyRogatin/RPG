@@ -1,4 +1,4 @@
-startFight([new InvisibleMan()], getString("fight.start.enemy.invisibleman"));
+startFight([new InvisibleMan(), new InvisibleMan()], getString("fight.start.enemy.invisibleman"));
 
 function loop() {
     switch (state) {

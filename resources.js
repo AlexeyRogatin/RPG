@@ -48,9 +48,12 @@ let imgAct = loadImageFromData("actIcon.bmp");
 let imgItem = loadImageFromData("itemIcon.bmp");
 let imgMercy = loadImageFromData("mercyIcon.bmp");
 let imgDialogueBox = loadImageFromData("dialogueBox.bmp");
+let imgDialogueBoxCorner = loadImageFromData("dialogueBoxCorner.bmp");
+let imgDialogueBoxTail = loadImageFromData("dialogueBoxTail.bmp");
 
 let imgInvisibleManBoots = loadImageFromData("invisibleManBoots.bmp");
 let imgInvisibleManTrench = loadImageFromData("invisibleManCoat.bmp");
 let imgInvisibleManHead = loadImageFromData("invisibleManHead.bmp");
+let imgInvisibleManDefeat = loadImageFromData("invisibleManDefeat.bmp");
 
 let animHit = new AnimatedImage("hit1.bmp", "hit2.bmp", "hit3.bmp", "hit4.bmp", "hit5.bmp", "hit6.bmp", "hit7.bmp");

@@ -1,19 +1,17 @@
-function checkText(enemies, activeEnemy, activeAct, heart) {
-    enemies[activeEnemy].acts[activeAct].text = enemies[activeEnemy].name + "\n" + getString("fight.interface.dmg") + " " +
-        (enemies[activeEnemy].damage - enemies[activeEnemy].tempDamage) + " " + getString("fight.interface.def") + " " +
-        (enemies[activeEnemy].defence - enemies[activeEnemy].tempDefence) + "\n" +
-        enemies[activeEnemy].description;
-}
-
 const ENEMY_SPARED = -1;
 
+const DIALOGUE_BOX_OFFSET = new Vector(200, 0);
+const DIALOGUE_BOX_SIZE = new Vector(130, 130);
+
 class Enemy {
+    pos;
     hitpoints;
+    maxHitpoints;
     damage;
     defence;
     tempDefence = 0;
     tempDamage = 0;
-    mersy = 0;
+    mercy = 0;
 
     //for check information
     name;
@@ -25,9 +23,16 @@ class Enemy {
     //what happens if you mercy not yellow enemy
     mercyAct = emptyFunction;
 
-    bodyParts = [];
+    //body parts
+    //in main condition
+    mainParts = [];
+    //when defeated
+    partsDefeated = [];
 
+    //comments
+    //next comments
     obligatoryComments = [];
+    //randomComments
     defaultComments = [];
 
     nextComment() {
@@ -38,7 +43,38 @@ class Enemy {
         }
     }
 
+    killed() {
+        return this.hitpoints <= 0;
+    }
+
+    spared() {
+        return this.mercy === ENEMY_SPARED;
+    }
+
+    defeated() {
+        return this.killed() || this.spared();
+    }
+
+    dialogueBox = new DialogueBox();
+
+    setNextText() {
+        this.dialogueBox.newText(this.nextPhrase());
+    }
+
+    drawDialogueBox() {
+        this.dialogueBox.setPos(this.pos.add(DIALOGUE_BOX_OFFSET), DIALOGUE_BOX_SIZE);
+
+        this.dialogueBox.draw();
+    }
+
+    dialogueRead() {
+        return this.dialogueBox.read();
+    }
+
+    //phrases
+    //next phrases
     obligatoryPhrases = [];
+    //random phrases
     defaultPhrases = [];
 
     nextPhrase() {
@@ -49,10 +85,21 @@ class Enemy {
         }
     }
 
-    draw(x, y, transparency = 1, move = true) {
-        ctx.globalAlpha = transparency;
-        for (let partIndex = 0; partIndex < this.bodyParts.length; partIndex++) {
-            let part = this.bodyParts[partIndex];
+    draw(x, y, move = true) {
+        //body parts if alive
+        let bodyParts = this.mainParts;
+        //body parts when defeated
+        if (this.hitpoints <= 0) {
+            bodyParts = this.partsDefeated;
+        }
+        //spared
+        if (this.mercy === ENEMY_SPARED) {
+            ctx.globalAlpha = TRANSPARENCY;
+            move = false;
+        }
+
+        for (let partIndex = 0; partIndex < bodyParts.length; partIndex++) {
+            let part = bodyParts[partIndex];
             let partPos;
             if (move) {
                 partPos = part.getPos();
@@ -64,6 +111,13 @@ class Enemy {
         }
         ctx.globalAlpha = 1;
     }
+}
+
+function checkText(enemies, activeEnemy, activeAct, heart) {
+    enemies[activeEnemy].acts[activeAct].text = enemies[activeEnemy].name + "\n" + getString("fight.interface.dmg") + " " +
+        (enemies[activeEnemy].damage - enemies[activeEnemy].tempDamage) + " " + getString("fight.interface.def") + " " +
+        (enemies[activeEnemy].defence - enemies[activeEnemy].tempDefence) + "\n" +
+        enemies[activeEnemy].description;
 }
 
 let emptyFunction = (enemies, activeEnemy, activeAct, heart) => { };
@@ -111,7 +165,8 @@ const PARAGRAPH_SYM = "~";
 class InvisibleMan extends Enemy {
     constructor() {
         super();
-        this.hitpoints = 4;
+        this.hitpoints = 8;
+        this.maxHitpoints = 8;
         this.damage = 1;
         this.defence = 1;
 
@@ -132,9 +187,11 @@ class InvisibleMan extends Enemy {
             getString("enemy.invisibleman.action.ignore.result"),
             (enemies, activeEnemy, activeAct, heart) => { enemies[activeEnemy].tempAttack += 1; }));
 
-        this.bodyParts.push(new BodyPart(imgInvisibleManBoots, new Vector(0, 0), new Vector(0, 0), TRANSITION_NONE));
-        this.bodyParts.push(new BodyPart(imgInvisibleManTrench, new Vector(0, -10), new Vector(0, 5), TRANSITION_SINUSOIDAL));
-        this.bodyParts.push(new BodyPart(imgInvisibleManHead, new Vector(0, -10), new Vector(0, 20), TRANSITION_SINUSOIDAL));
+        this.mainParts.push(new BodyPart(imgInvisibleManBoots, new Vector(0, 0), new Vector(0, 0), TRANSITION_NONE));
+        this.mainParts.push(new BodyPart(imgInvisibleManTrench, new Vector(0, -10), new Vector(0, 5), TRANSITION_SINUSOIDAL));
+        this.mainParts.push(new BodyPart(imgInvisibleManHead, new Vector(0, -10), new Vector(0, 20), TRANSITION_SINUSOIDAL));
+
+        this.partsDefeated.push(new BodyPart(imgInvisibleManDefeat, new Vector(-2, 0), new Vector(2, 0), TRANSITION_SINUSOIDAL));
 
         this.defaultComments.push(getString("enemy.invisibleman.comments.random.1"));
         this.defaultComments.push(getString("enemy.invisibleman.comments.random.2"));

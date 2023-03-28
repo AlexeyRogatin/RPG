@@ -4,9 +4,9 @@ const HIT_WIDTH = 0.05;
 const HIT_MIN = 0.5;
 const HIT_MAX = 1 - HIT_WIDTH / 2;
 
-const HIT_TIME = 2.5 * 60;
-
 const HIT_VALUE_MISS = -1;
+
+const ENDED_VALUE_HIT = -1;
 
 const GREAT_HIT_MULTIPLIER = 2;
 
@@ -15,11 +15,11 @@ class hitBox {
         this.pos = pos;
         this.size = size;
         this.clear();
-        this.endingTimer = getTimer(-1);
+        this.ended = true;
     }
 
     clear() {
-        setTimer(this.endingTimer, -1);
+        this.ended = false;
         this.indicator = 0;
         this.speed = getRandomFloat(MIN_SPEED, MAX_SPEED) * this.size.x;
         this.value = 0;
@@ -28,7 +28,10 @@ class hitBox {
     }
 
     updateIndicator() {
-        if (getTime(this.endingTimer) < 0) {
+        if (this.ended === ENDED_VALUE_HIT) {
+            this.ended = true;
+        }
+        if (!this.ended) {
             this.indicator += this.speed;
             if (keys[zKey].wentDown) {
                 if (this.indicator < this.hitPos) {
@@ -41,16 +44,13 @@ class hitBox {
                     this.indicator <= this.hitPos + hitWidth / 2) {
                     this.value *= GREAT_HIT_MULTIPLIER;
                 }
-                setTimer(this.endingTimer, HIT_TIME);
+                this.ended = ENDED_VALUE_HIT;
             }
             if (this.indicator > this.size.x) {
                 this.indicator = this.size.x;
                 this.ended = true;
                 this.value = HIT_VALUE_MISS;
             }
-        }
-        if (getTime(this.endingTimer) === 0) {
-            this.ended = true;
         }
     }
 

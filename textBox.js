@@ -3,15 +3,14 @@ const WORD_PAUSE = 3;
 const PARAGRAPH_PAUSE = 15;
 
 class TextBox {
-    constructor(pos, text, size, kegel = TEXT_KEGEL, color = "white") {
-        this.pos = pos;
-        this.texts = text.split(PARAGRAPH_SYM);
+    constructor(kegel = TEXT_KEGEL, color = "white") {
         this.charTimer = getTimer(0);
-        this.partIndex = 0;
-        this.partCount = this.texts.length;
         this.kegel = kegel;
         this.color = color;
-        this.read = false;
+    }
+
+    setPos(pos, size) {
+        this.pos = pos;
         this.size = size;
     }
 
@@ -34,10 +33,11 @@ class TextBox {
             if (keys[zKey].wentDown) {
                 if (this.partIndex + 1 === this.partCount) {
                     this.read = true;
+                } else {
+                    this.partText = "";
+                    this.charIndex = 0;
+                    this.partIndex = clamp(this.partIndex + 1, 0, this.partCount - 1);
                 }
-                this.partText = "";
-                this.charIndex = 0;
-                this.partIndex = clamp(this.partIndex + 1, 0, this.partCount - 1);
             }
         } else if (getTime(this.charTimer) <= 0) {
             this.partText += this.texts[this.partIndex][this.charIndex];
@@ -57,6 +57,6 @@ class TextBox {
 
     draw() {
         drawParagraph(this.pos.x - this.size.x / 2, this.pos.y - this.size.y / 2,
-            this.partText, this.kegel, "Big", false, this.color, this.size.x, this.kegel * 1.5);
+            this.partText, this.kegel, "Big", false, this.color, this.size.x, this.kegel * 1.5, "top");
     }
 }

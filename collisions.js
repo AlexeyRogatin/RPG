@@ -1,3 +1,11 @@
+function isInRect(pos, rectPos, size) {
+    return !(pos.x > rectPos.x + size.x / 2 ||
+        pos.x < rectPos.x - size.x / 2 ||
+        pos.y > rectPos.y + size.y / 2 ||
+        pos.y < rectPos.y - size.y / 2
+    );
+}
+
 function checkPointCollisionWithWall(pos, speed, wall, normal) {
     //new round collision position
     let newPos = pos.add(speed).sub(wall[0]);
