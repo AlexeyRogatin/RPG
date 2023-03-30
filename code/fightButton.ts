@@ -1,11 +1,20 @@
-class FightButton {
-    constructor(pos, size, text, icon) {
+import { Vector } from "./math";
+import { drawImage, drawRect, drawText } from "./drawing";
+import { isInRect } from "./math";
+import { zKey } from "./input";
+
+export class FightButton {
+    pos: Vector = new Vector(0, 0);
+    size: Vector = new Vector(0, 0);
+    text: string;
+    icon: HTMLImageElement;
+    pressed = false;
+    activated = false;
+    constructor(pos: Vector, size: Vector, text: string, icon: HTMLImageElement) {
         this.size = size;
         this.pos = pos;
         this.text = text;
         this.icon = icon;
-        this.pressed = false;
-        this.activated = false;
     }
     draw() {
         let color = "yellow";
@@ -20,10 +29,10 @@ class FightButton {
         this.pressed = false;
         this.activated = false;
     }
-    checkCollision(pos) {
+    checkCollision(pos: Vector) {
         if (isInRect(pos, this.pos, this.size)) {
             this.pressed = true;
-            if (keys[zKey].wentDown) {
+            if (zKey.wentDown) {
                 this.activated = true;
             }
         }

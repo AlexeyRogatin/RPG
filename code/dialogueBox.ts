@@ -1,13 +1,16 @@
+import { imgDialogueBoxCorner, imgDialogueBoxTail } from "resources";
+import { drawImage, drawRect, FIGHT_IMAGE_SCALING } from "drawing";
+import { TextBox } from "textBox";
+import { Vector } from "./math";
+
 const DIALOGUE_BOX_KEGEL = 20;
 const DIALOGUE_FONT_COLOR = "black";
 const DIALOGUE_BOX_COLOR = "white";
 const DIALOGUE_BOX_BORDER = imgDialogueBoxCorner.width * FIGHT_IMAGE_SCALING;
 const DIALOGUE_BOX_TAIL = imgDialogueBoxTail.width * FIGHT_IMAGE_SCALING;
 
-class DialogueBox {
-    constructor() {
-        this.textBox = new TextBox(DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR);
-    }
+export class DialogueBox {
+    textBox = new TextBox(DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR);
 
     drawDialogueRect() {
         drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2,
@@ -31,11 +34,11 @@ class DialogueBox {
             this.textBox.size.x + DIALOGUE_BOX_BORDER * 2 + 2, this.textBox.size.y + 2, 0, DIALOGUE_BOX_COLOR);
     }
 
-    setPos(pos, size) {
+    setPos(pos: Vector, size: Vector) {
         this.textBox.setPos(pos, size);
     }
 
-    newText(text) {
+    newText(text: string) {
         this.textBox.newText(text);
     }
 

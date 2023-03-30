@@ -1,17 +1,22 @@
-const BOX_TRANSITION_SPEED = 0.9;
+import { Vector } from "./math";
+import { drawPolygon } from "./drawing";
+import { STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE } from "fight";
 
-function getRectanglePoints(pos, size) {
+const BOX_TRANSITION_SPEED = 0.9;
+const POINT_EPSILON = 1e-3;
+
+export function getRectanglePoints(pos: Vector, size: Vector) {
     return [new Vector(pos.x + size.x / 2, pos.y + size.y / 2),
     new Vector(pos.x - size.x / 2, pos.y + size.y / 2),
     new Vector(pos.x - size.x / 2, pos.y - size.y / 2),
     new Vector(pos.x + size.x / 2, pos.y - size.y / 2)];
 }
 
-class Box {
+export class Box {
     points = getRectanglePoints(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE);
     transitionTo = getRectanglePoints(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE);
     transitionSpeed = BOX_TRANSITION_SPEED;
-    moveBy(speed) {
+    moveBy(speed: Vector) {
         let newPoints = [];
         for (let pointIndex = 0; pointIndex < this.points.length; pointIndex++) {
             newPoints.push(this.points[pointIndex].add(speed));
@@ -22,7 +27,7 @@ class Box {
         drawPolygon(0, 0, "black", this.points);
         drawPolygon(0, 0, "white", this.points, 5);
     }
-    startTransition(to, speed) {
+    startTransition(to: Vector[], speed: number) {
         this.transitionTo = to;
         this.transitionSpeed = speed;
     }
