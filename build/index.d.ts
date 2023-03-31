@@ -32,34 +32,52 @@ declare module "timers" {
 }
 declare module "resources" {
     import { Timer } from "timers";
-    export class AnimatedImage {
-        images: HTMLImageElement[];
+    export class Img {
+        img: HTMLImageElement;
+        width: number;
+        height: number;
+        drawWidth: number;
+        drawHeight: number;
+        constructor(src: string, invertedX?: boolean, invertedY?: boolean);
+        updateImage(): void;
+    }
+    export class AnimatedImg extends Img {
+        images: Img[];
         changeTimer: Timer;
         playing: boolean;
         delay: number;
         looped: boolean;
-        constructor(...args: any[]);
+        constructor(invertedX?: boolean, invertedY?: boolean, ...args: any[]);
         startAnimation(delay: number, looped: boolean): void;
-        getImage(): HTMLImageElement;
+        changeDelay(delay: number): void;
+        updateImage(): void;
     }
-    export let imgNone: HTMLImageElement;
-    export let imgHeart: HTMLImageElement;
-    export let imgFight: HTMLImageElement;
-    export let imgAct: HTMLImageElement;
-    export let imgItem: HTMLImageElement;
-    export let imgMercy: HTMLImageElement;
-    export let imgDialogueBox: HTMLImageElement;
-    export let imgDialogueBoxCorner: HTMLImageElement;
-    export let imgDialogueBoxTail: HTMLImageElement;
-    export let imgInvisibleManBoots: HTMLImageElement;
-    export let imgInvisibleManTrench: HTMLImageElement;
-    export let imgInvisibleManHead: HTMLImageElement;
-    export let imgInvisibleManDefeat: HTMLImageElement;
-    export let animHit: AnimatedImage;
+    export let imgNone: Img;
+    export let imgHeart: Img;
+    export let imgFight: Img;
+    export let imgAct: Img;
+    export let imgItem: Img;
+    export let imgMercy: Img;
+    export let imgDialogueBox: Img;
+    export let imgDialogueBoxCorner: Img;
+    export let imgDialogueBoxTail: Img;
+    export let imgInvisibleManBoots: Img;
+    export let imgInvisibleManTrench: Img;
+    export let imgInvisibleManHead: Img;
+    export let imgInvisibleManDefeat: Img;
+    export let animHit: AnimatedImg;
+    export let imgLexa: Img;
+    export let imgLexaBack: Img;
+    export let imgLexaSideRight: Img;
+    export let imgLexaSideLeft: Img;
+    export let animLexaWalk: AnimatedImg;
+    export let animLexaWalkBack: AnimatedImg;
+    export let animLexaWalkSideRight: AnimatedImg;
+    export let animLexaWalkSideLeft: AnimatedImg;
 }
 declare module "drawing" {
     import { Vector } from "math";
-    import { AnimatedImage } from "resources";
+    import { Img } from "resources";
     export const canvas: HTMLCanvasElement;
     export const FIGHT_IMAGE_SCALING = 3.8;
     export const TRANSPARENCY = 0.4;
@@ -70,10 +88,10 @@ declare module "drawing" {
     };
     export function drawRect(x: number, y: number, width: number, height: number, angle: number, color: string, lineWidth?: number, transparency?: number): void;
     export function clearCanvas(color: string): void;
-    export function drawImage(x: number, y: number, width: number | undefined, height: number | undefined, angle: number, image: HTMLImageElement | AnimatedImage, transparency?: number): void;
+    export function drawImage(x: number, y: number, width: number | undefined, height: number | undefined, angle: number, image: Img, transparency?: number): void;
     export function drawPolygon(x: number, y: number, color: string, points: Vector[], lineWidth?: number, transparency?: number): void;
-    export function drawText(x: number, y: number, text: string, kegel: number, font: string, bold: boolean, color: string, textAlign?: CanvasTextAlign, textBaseline?: CanvasTextBaseline, transparency?: number): void;
-    export function drawParagraph(x: number, y: number, text: string, kegel: number, font: string, bold: boolean, color: string, width?: number, interval?: number, textBaseline?: CanvasTextBaseline, textAlign?: CanvasTextAlign, transparency?: number): void;
+    export function drawText(x: number, y: number, text: string, kegel: number, font: string, bold: boolean, color: string, textAlign?: CanvasTextAlign, textBaseline?: CanvasTextBaseline, transparency?: number, lineWidth?: number): void;
+    export function drawParagraph(x: number, y: number, text: string, kegel: number, font: string, bold: boolean, color: string, width?: number, interval?: number, textBaseline?: CanvasTextBaseline, textAlign?: CanvasTextAlign, transparency?: number, lineWidth?: number): void;
 }
 declare module "input" {
     class Key {
@@ -90,6 +108,7 @@ declare module "input" {
     export let rightKey: Key;
     export let zKey: Key;
     export let xKey: Key;
+    export let enterKey: Key;
     export function clearKeys(): void;
 }
 declare module "textBox" {
@@ -141,7 +160,7 @@ declare module "enemies" {
     import { Vector } from "math";
     import { DialogueBox } from "dialogueBox";
     import { Heart } from "fight";
-    import { AnimatedImage } from "resources";
+    import { Img } from "resources";
     export const ENEMY_SPARED = -1;
     export const PARAGRAPH_SYM = "~";
     export class Enemy {
@@ -186,11 +205,11 @@ declare module "enemies" {
         SINUSOIDAL = 2
     }
     class BodyPart {
-        img: HTMLImageElement | AnimatedImage;
+        img: Img;
         point1: Vector;
         point2: Vector;
         transitionType: Transitions;
-        constructor(img: HTMLImageElement | AnimatedImage, point1: Vector, point2: Vector, transitionType: Transitions);
+        constructor(img: Img, point1: Vector, point2: Vector, transitionType: Transitions);
         getPos(): Vector;
     }
     export class InvisibleMan extends Enemy {
@@ -221,14 +240,15 @@ declare module "choiseBox" {
 }
 declare module "fightButton" {
     import { Vector } from "math";
+    import { Img } from "resources";
     export class FightButton {
         pos: Vector;
         size: Vector;
         text: string;
-        icon: HTMLImageElement;
+        icon: Img;
         pressed: boolean;
         activated: boolean;
-        constructor(pos: Vector, size: Vector, text: string, icon: HTMLImageElement);
+        constructor(pos: Vector, size: Vector, text: string, icon: Img);
         draw(): void;
         updateButton(): void;
         checkCollision(pos: Vector): void;
@@ -286,6 +306,7 @@ declare module "fight" {
     import { Enemy } from "enemies";
     export const STANDART_TEXT_BOX_SIZE: Vector;
     export const STANDART_TEXT_BOX_POS: Vector;
+    export const TEXT_BOX_SIZE_DIFF: Vector;
     export enum GameState {
         FIGHT = 0,
         WONDER = 1
@@ -294,7 +315,7 @@ declare module "fight" {
     export class Heart {
         pos: Vector;
         collisionRadius: number;
-        sprite: HTMLImageElement;
+        sprite: import("resources").Img;
         damage: number;
         defence: number;
         speedConst: Vector;
@@ -317,4 +338,42 @@ declare module "box" {
         checkTransition(): boolean;
     }
 }
+declare module "wander" {
+    export function loopWander(): void;
+}
 declare module "index" { }
+declare module "interactionBox" {
+    import { ChoiseBox, Option } from "choiseBox";
+    import { Vector } from "math";
+    import { TextBox } from "textBox";
+    enum InteractionType {
+        TEXT = 0,
+        CHOICE = 1
+    }
+    export class Choise {
+        option: Option;
+        text: string;
+        cons: () => {};
+        constructor(option: Option, text: string, cons: () => {});
+    }
+    export class Interaction {
+        type: InteractionType;
+        text: string;
+        choises: Choise[];
+        static getTextInteraction(text: string): Interaction;
+        static getChoiseInteraction(choises: Choise[]): Interaction;
+    }
+    export class InteractionBox {
+        pos: Vector;
+        size: Vector;
+        textBox: TextBox;
+        choiseBox: ChoiseBox;
+        interactions: Interaction[];
+        interactionIndex: number;
+        ended: boolean;
+        constructor(pos: Vector, size: Vector);
+        setInteraction(interactions: Interaction[]): void;
+        setNextInteraction(): void;
+        updateInteractions(heartPos: Vector): Vector;
+    }
+}

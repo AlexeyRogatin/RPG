@@ -1,5 +1,5 @@
 import { Vector, getRandomInt, clamp } from "./math";
-import { canvas, FIGHT_IMAGE_SCALING } from "./drawing";
+import { camera, canvas, clearCanvas, FIGHT_IMAGE_SCALING } from "./drawing";
 import { Enemy, ENEMY_SPARED } from "./enemies";
 import { imgHeart } from "./resources";
 import { drawImage, drawParagraph, TEXT_KEGEL } from "./drawing";
@@ -18,12 +18,13 @@ import { checkRoundCollisionWithBox } from "./collisions";
 import { getMovingSpeed } from "./movement";
 import { xKey, leftKey, rightKey } from "./input";
 import { Timer } from "./timers";
+import { Interface } from "readline";
 
 const STANDART_BOX_SIZE = new Vector(300, 300);
 const STANDART_BOX_POS = new Vector(0, 130);
 export const STANDART_TEXT_BOX_SIZE = new Vector(1200, 240);
 export const STANDART_TEXT_BOX_POS = new Vector(0, 160);
-const TEXT_BOX_SIZE_DIFF = new Vector(200, 60);
+export const TEXT_BOX_SIZE_DIFF = new Vector(200, 60);
 const STANDART_BUTTON_SIZE = new Vector(220, 80);
 const BUTTON_Y_OFFSET = 60;
 const DISTANCE_BETWEEN_ENEMIES = canvas.width / 4;
@@ -66,7 +67,6 @@ export enum GameState {
     WONDER,
 }
 
-//TODO: состояние боли
 export let state = GameState.WONDER;
 
 export class Heart {
@@ -90,9 +90,11 @@ function getEnemyPosX(enemyIndex: number) {
 }
 
 export function startFight(enemies: Enemy[], phrase: string) {
+    fight = new Fight(heart);
     state = GameState.FIGHT;
     fight.enemies = enemies;
     fight.comment = phrase;
+    fight.textBox.setPos(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE.sub(TEXT_BOX_SIZE_DIFF));
     for (let enemyIndex = 0; enemyIndex < fight.enemies.length; enemyIndex++) {
         fight.enemies[enemyIndex].pos = new Vector(getEnemyPosX(enemyIndex), ENEMIES_POS_Y);
     }
@@ -233,7 +235,7 @@ function updateHitInHitState() {
                 else if (animHit.changeTimer.getTime() === 0) {
                     let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
                     let xPos = -width / 2 + DISTANCE_BETWEEN_ENEMIES * fight.activeEnemy;
-                    let damage = Math.ceil(heart.damage * fight.hitBox.value);
+                    let damage = Math.ceil(heart.damage / fight.enemies[fight.activeEnemy].defence * fight.hitBox.value);
                     fight.healthbox.playAnimation(new Vector(xPos, ENEMIES_POS_Y), fight.enemies[fight.activeEnemy].hitpoints,
                         damage, fight.enemies[fight.activeEnemy].maxHitpoints);
                     fight.enemies[fight.activeEnemy].hitpoints -= damage;
@@ -439,11 +441,12 @@ class Fight {
     }
 }
 
-let fight = new Fight(heart);
-
-fight.textBox.setPos(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE.sub(TEXT_BOX_SIZE_DIFF));
+let fight: Fight;
 
 export function loopFight() {
+    camera.pos = new Vector(0, 0);
+
+    clearCanvas("black");
     //moving box
     fight.box.updateTransition();
 

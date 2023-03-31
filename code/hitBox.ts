@@ -71,7 +71,7 @@ export class HitBox {
 
     draw() {
         let hitWidth = HIT_WIDTH * this.size.x;
-        drawRect(this.pos.x - this.size.x / 2 + this.hitPos, this.pos.y, hitWidth, this.size.y, 0, "green", 10);
+        drawRect(this.pos.x - this.size.x / 2 + this.hitPos, this.pos.y, hitWidth, this.size.y, 0, "red", 10);
         drawPolygon(this.pos.x - this.size.x / 2 + this.indicator, this.pos.y, "white",
             [new Vector(0, -this.size.y / 2), new Vector(0, this.size.y / 2)], 7);
     }

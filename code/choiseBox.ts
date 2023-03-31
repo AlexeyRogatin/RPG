@@ -3,7 +3,6 @@ import { drawText, TEXT_KEGEL } from "./drawing";
 import { TRANSPARENCY } from "./drawing";
 import { rightKey, leftKey, downKey, upKey, zKey } from "./input";
 
-//TODO: константная боль
 export const CHOICE_RESULT_NONE = -1;
 
 export class Option {

@@ -21,15 +21,16 @@ enum keyCodes {
     RIGHT = 39,
     Z = 90,
     X = 88,
+    ENTER = 13,
 }
 
-//TODO: подозрительные клавиши
 export let upKey = new Key(keyCodes.UP);
 export let downKey = new Key(keyCodes.DOWN);
 export let leftKey = new Key(keyCodes.LEFT);
 export let rightKey = new Key(keyCodes.RIGHT);
 export let zKey = new Key(keyCodes.Z);
 export let xKey = new Key(keyCodes.X);
+export let enterKey = new Key(keyCodes.ENTER);
 
 function handleKeyDown(key: Key) {
     if (!key.isDown) {

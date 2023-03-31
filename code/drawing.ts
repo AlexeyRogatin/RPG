@@ -1,10 +1,9 @@
 import { Vector } from "math";
-import { AnimatedImage } from "./resources";
+import { Img } from "./resources";
 
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-//сплошная боль
 export const FIGHT_IMAGE_SCALING = 3.8;
 
 export const TRANSPARENCY = 0.4;
@@ -46,14 +45,11 @@ export function drawRect(x: number, y: number, width: number, height: number,
 }
 
 export function clearCanvas(color: string) {
-    drawRect(0, 0, canvas.width, canvas.height, 0, color);
+    drawRect(camera.pos.x, camera.pos.y, canvas.width, canvas.height, 0, color);
 }
 
 export function drawImage(x: number, y: number, width: number = 0, height: number = 0, angle: number,
-    image: HTMLImageElement | AnimatedImage, transparency = 1) {
-    if (image instanceof AnimatedImage) {
-        image = image.getImage();
-    }
+    image: Img, transparency = 1) {
     if (width === 0) {
         width = image.width * FIGHT_IMAGE_SCALING;
     }
@@ -64,9 +60,10 @@ export function drawImage(x: number, y: number, width: number = 0, height: numbe
     ctx.save();
     ctx.translate(x - camera.pos.x + canvas.width / 2, y - camera.pos.y + canvas.height / 2);
     ctx.rotate(-angle);
-    ctx.scale(width / image.width, height / image.height);
+    ctx.scale(width / image.drawWidth, height / image.drawHeight);
     ctx.globalAlpha = transparency;
-    ctx.drawImage(image, -image.width / 2, -image.height / 2);
+    image.updateImage();
+    ctx.drawImage(image.img, -image.width / 2, -image.height / 2);
     ctx.restore();
 }
 
@@ -92,13 +89,9 @@ export function drawPolygon(x: number, y: number, color: string, points: Vector[
     ctx.restore();
 }
 
-export function drawText(x: number, y: number, text: string, kegel: number, font: string, bold: boolean,
-    color: string, textAlign: CanvasTextAlign = "center", textBaseline: CanvasTextBaseline = "middle",
-    transparency = 1) {
-    ctx.save();
-    ctx.translate(x - camera.pos.x + canvas.width / 2, y - camera.pos.y + canvas.height / 2);
+function textParams(kegel: number, font: string, bold: boolean, textAlign: CanvasTextAlign,
+    textBaseline: CanvasTextBaseline, transparency: number) {
     ctx.globalAlpha = transparency;
-    ctx.fillStyle = color;
     let fullFont = '';
     if (bold) {
         fullFont += 'bold ';
@@ -108,29 +101,41 @@ export function drawText(x: number, y: number, text: string, kegel: number, font
     ctx.font = fullFont;
     ctx.textBaseline = textBaseline;
     ctx.textAlign = textAlign;
-    ctx.fillText(text, 0, 0);
+}
+
+function drawOnlyText(x: number, y: number, text: string, color: string, lineWidth: number) {
+    if (lineWidth !== 0) {
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = color;
+        ctx.strokeText(text, x, y);
+    } else {
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+    }
+}
+
+export function drawText(x: number, y: number, text: string, kegel: number, font: string, bold: boolean,
+    color: string, textAlign: CanvasTextAlign = "center", textBaseline: CanvasTextBaseline = "middle",
+    transparency = 1, lineWidth = 0) {
+    ctx.save();
+    ctx.translate(x - camera.pos.x + canvas.width / 2, y - camera.pos.y + canvas.height / 2);
+
+    textParams(kegel, font, bold, textAlign, textBaseline, transparency);
+    drawOnlyText(0, 0, text, color, lineWidth);
+
     ctx.restore();
 }
 
 export function drawParagraph(x: number, y: number, text: string, kegel: number, font: string, bold: boolean,
-    color: string, width = 0, interval = 0, textBaseline: CanvasTextBaseline = "top", textAlign: CanvasTextAlign = "left", transparency = 1) {
+    color: string, width = 0, interval = 0, textBaseline: CanvasTextBaseline = "top", textAlign: CanvasTextAlign = "left",
+    transparency = 1, lineWidth = 0,) {
     if (width === void 0) { width = 999999; }
     if (interval === void 0) { interval = 0; }
     ctx.save();
     ctx.translate(x - camera.pos.x + canvas.width / 2, y - camera.pos.y + canvas.height / 2);
-    ctx.globalAlpha = transparency;
     x = 0;
     y = 0;
-    ctx.fillStyle = color;
-    let fullFont = '';
-    if (bold) {
-        fullFont += 'bold ';
-    }
-    fullFont += kegel + 'px ' + font;
-
-    ctx.font = fullFont;
-    ctx.textBaseline = textBaseline;
-    ctx.textAlign = textAlign;
+    textParams(kegel, font, bold, textAlign, textBaseline, transparency);
     var paragraphs = text.split('\n');
     for (let paragraphIndex = 0; paragraphIndex < paragraphs.length; paragraphIndex++) {
         let paragraph = paragraphs[paragraphIndex];
@@ -139,7 +144,7 @@ export function drawParagraph(x: number, y: number, text: string, kegel: number,
         for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
             let supposedLine = line + words[wordIndex] + ' ';
             if (ctx.measureText(supposedLine).width > width) {
-                ctx.fillText(line, x, y);
+                drawOnlyText(x, y, line, color, lineWidth);
                 y += interval;
                 line = words[wordIndex] + ' ';
             }
@@ -147,7 +152,7 @@ export function drawParagraph(x: number, y: number, text: string, kegel: number,
                 line = supposedLine;
             }
         }
-        ctx.fillText(line, x, y);
+        drawOnlyText(x, y, line, color, lineWidth);
         y += interval;
     }
     ctx.restore();

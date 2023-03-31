@@ -1,17 +1,16 @@
 import { Vector } from "./math";
 import { getRandomInt } from "./math";
 import { DialogueBox } from "./dialogueBox";
-import { TRANSPARENCY, FIGHT_IMAGE_SCALING, drawImage } from "./drawing";
+import { TRANSPARENCY, drawImage } from "./drawing";
 import { Heart } from "fight";
 import { getString } from "localization";
-import { AnimatedImage, imgInvisibleManBoots, imgInvisibleManDefeat, imgInvisibleManHead, imgInvisibleManTrench } from "./resources";
+import { AnimatedImg, Img, imgInvisibleManBoots, imgInvisibleManDefeat, imgInvisibleManHead, imgInvisibleManTrench } from "./resources";
 import { music } from "./music";
 
-//TODO: константы боли
 export const ENEMY_SPARED = -1;
 
 const DIALOGUE_BOX_OFFSET = new Vector(200, 0);
-const DIALOGUE_BOX_SIZE = new Vector(130, 130);
+const DIALOGUE_BOX_SIZE = new Vector(140, 140);
 
 export const PARAGRAPH_SYM = "~";
 
@@ -151,12 +150,12 @@ enum Transitions {
 }
 
 class BodyPart {
-    img: HTMLImageElement | AnimatedImage;
+    img: Img;
     point1: Vector;
     point2: Vector;
     transitionType: Transitions;
 
-    constructor(img: HTMLImageElement | AnimatedImage, point1: Vector, point2: Vector, transitionType: Transitions) {
+    constructor(img: Img, point1: Vector, point2: Vector, transitionType: Transitions) {
         this.img = img;
         this.point1 = point1;
         this.point2 = point2;

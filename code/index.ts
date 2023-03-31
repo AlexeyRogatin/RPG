@@ -4,19 +4,21 @@ import { getString } from "./localization";
 import { startFight, state, loopFight, GameState } from "./fight";
 import { clearKeys } from "./input";
 import { Timer } from "./timers";
-
-startFight([new InvisibleMan(), new InvisibleMan()], getString("fight.start.enemy.invisibleman"));
+import { loopWander } from "wander.js";
 
 function loop() {
     switch (state) {
         case GameState.FIGHT: {
             loopFight();
         } break;
+        case GameState.WONDER: {
+            loopWander();
+        } break;
     }
 }
 
 function mainLoop() {
-    clearCanvas("black");
+    clearCanvas("grey");
 
     loop();
 
