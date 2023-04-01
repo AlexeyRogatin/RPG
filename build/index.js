@@ -353,7 +353,7 @@ System.register("drawing", ["math"], function (exports_4, context_4) {
             ctx = canvas.getContext("2d");
             exports_4("FIGHT_IMAGE_SCALING", FIGHT_IMAGE_SCALING = 3.8);
             exports_4("TRANSPARENCY", TRANSPARENCY = 0.4);
-            exports_4("TEXT_KEGEL", TEXT_KEGEL = 32);
+            exports_4("TEXT_KEGEL", TEXT_KEGEL = 36);
             exports_4("camera", camera = {
                 pos: new math_2.Vector(0, 0),
                 scale: 0
@@ -558,7 +558,7 @@ System.register("dialogueBox", ["resources", "drawing", "textBox"], function (ex
             }
         ],
         execute: function () {
-            DIALOGUE_BOX_KEGEL = 20;
+            DIALOGUE_BOX_KEGEL = 22;
             DIALOGUE_FONT_COLOR = "black";
             DIALOGUE_BOX_COLOR = "white";
             DIALOGUE_BOX_BORDER = resources_1.imgDialogueBoxCorner.width * drawing_4.FIGHT_IMAGE_SCALING;
@@ -618,7 +618,7 @@ System.register("localization", [], function (exports_8, context_8) {
         execute: function () {
             LOCAL_ENGLISH = 0;
             LOCAL_RUSSIAN = 1;
-            local = LOCAL_ENGLISH;
+            local = LOCAL_RUSSIAN;
             englishLocalization = {
                 "fight.interface.won": "You won!",
                 "fight.interface.fight": "Fight",
@@ -2003,6 +2003,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                 constructor(pos, size) {
                     this.interactions = [];
                     this.interactionIndex = 0;
+                    this.result = choiseBox_2.CHOICE_RESULT_NONE;
                     this.ended = false;
                     this.pos = pos;
                     this.size = size;
@@ -2014,6 +2015,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     this.interactionIndex = 0;
                     this.interactions = interactions;
                     this.ended = false;
+                    this.result = choiseBox_2.CHOICE_RESULT_NONE;
                 }
                 setNextInteraction() {
                     this.interactionIndex++;
@@ -2046,6 +2048,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                                     let value = this.choiseBox.result;
                                     heartPos = this.choiseBox.updateChoise(heartPos);
                                     if (this.choiseBox.result != value) {
+                                        this.result = this.choiseBox.result;
                                         this.interactions[this.interactionIndex].choises[this.choiseBox.result].cons();
                                         if (this.interactions[this.interactionIndex].choises[this.choiseBox.result].text !== "") {
                                             this.textBox.newText(this.interactions[this.interactionIndex].choises[this.choiseBox.result].text);
@@ -2064,6 +2067,20 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                         }
                     }
                     return heartPos;
+                }
+                draw() {
+                    switch (this.interactions[this.interactionIndex].type) {
+                        case InteractionType.TEXT:
+                            {
+                                this.textBox.draw();
+                            }
+                            break;
+                        case InteractionType.CHOICE:
+                            {
+                                this.choiseBox.draw();
+                            }
+                            break;
+                    }
                 }
             };
             exports_21("InteractionBox", InteractionBox);

@@ -45,6 +45,7 @@ export class InteractionBox {
     choiseBox: ChoiseBox;
     interactions: Interaction[] = [];
     interactionIndex = 0;
+    result = CHOICE_RESULT_NONE;
     ended = false;
     constructor(pos: Vector, size: Vector) {
         this.pos = pos;
@@ -57,6 +58,7 @@ export class InteractionBox {
         this.interactionIndex = 0;
         this.interactions = interactions;
         this.ended = false;
+        this.result = CHOICE_RESULT_NONE;
     }
     setNextInteraction() {
         this.interactionIndex++;
@@ -82,6 +84,7 @@ export class InteractionBox {
                     let value = this.choiseBox.result;
                     heartPos = this.choiseBox.updateChoise(heartPos);
                     if (this.choiseBox.result != value) {
+                        this.result = this.choiseBox.result;
                         this.interactions[this.interactionIndex].choises[this.choiseBox.result].cons();
                         if (this.interactions[this.interactionIndex].choises[this.choiseBox.result].text !== "") {
                             this.textBox.newText(this.interactions[this.interactionIndex].choises[this.choiseBox.result].text);
@@ -98,5 +101,15 @@ export class InteractionBox {
             }
         }
         return heartPos;
+    }
+    draw() {
+        switch (this.interactions[this.interactionIndex].type) {
+            case InteractionType.TEXT: {
+                this.textBox.draw();
+            } break;
+            case InteractionType.CHOICE: {
+                this.choiseBox.draw();
+            } break;
+        }
     }
 }

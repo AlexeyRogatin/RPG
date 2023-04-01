@@ -3,7 +3,7 @@ import { drawImage, drawRect, FIGHT_IMAGE_SCALING } from "drawing";
 import { TextBox } from "textBox";
 import { Vector } from "./math";
 
-const DIALOGUE_BOX_KEGEL = 20;
+const DIALOGUE_BOX_KEGEL = 22;
 const DIALOGUE_FONT_COLOR = "black";
 const DIALOGUE_BOX_COLOR = "white";
 const DIALOGUE_BOX_BORDER = imgDialogueBoxCorner.width * FIGHT_IMAGE_SCALING;

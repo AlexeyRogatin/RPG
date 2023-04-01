@@ -8,7 +8,7 @@ export const FIGHT_IMAGE_SCALING = 3.8;
 
 export const TRANSPARENCY = 0.4;
 
-export const TEXT_KEGEL = 32;
+export const TEXT_KEGEL = 36;
 
 export let camera = {
     pos: new Vector(0, 0),

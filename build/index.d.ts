@@ -81,7 +81,7 @@ declare module "drawing" {
     export const canvas: HTMLCanvasElement;
     export const FIGHT_IMAGE_SCALING = 3.8;
     export const TRANSPARENCY = 0.4;
-    export const TEXT_KEGEL = 32;
+    export const TEXT_KEGEL = 36;
     export let camera: {
         pos: Vector;
         scale: number;
@@ -370,10 +370,12 @@ declare module "interactionBox" {
         choiseBox: ChoiseBox;
         interactions: Interaction[];
         interactionIndex: number;
+        result: number;
         ended: boolean;
         constructor(pos: Vector, size: Vector);
         setInteraction(interactions: Interaction[]): void;
         setNextInteraction(): void;
         updateInteractions(heartPos: Vector): Vector;
+        draw(): void;
     }
 }
