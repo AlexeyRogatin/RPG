@@ -1,10 +1,11 @@
 import { clearCanvas } from "./drawing";
 import { InvisibleMan } from "./enemies";
 import { getString } from "./localization";
-import { startFight, state, loopFight, GameState } from "./fight";
+import { startFight, loopFight, state, GameState } from "./fight";
 import { clearKeys } from "./input";
 import { Timer } from "./timers";
-import { loopWander } from "wander.js";
+import { loopWander } from "wander";
+import { loopEdit } from "mapEditor";
 
 function loop() {
     switch (state) {
@@ -14,6 +15,9 @@ function loop() {
         case GameState.WONDER: {
             loopWander();
         } break;
+        case GameState.MAP_EDIT: {
+            loopEdit();
+        }
     }
 }
 

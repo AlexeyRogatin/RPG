@@ -22,10 +22,10 @@ import { Interface } from "readline";
 
 const STANDART_BOX_SIZE = new Vector(300, 300);
 const STANDART_BOX_POS = new Vector(0, 130);
-export const STANDART_TEXT_BOX_SIZE = new Vector(1200, 240);
-export const STANDART_TEXT_BOX_POS = new Vector(0, 160);
+export const STANDART_TEXT_BOX_SIZE = new Vector(1500, 290);
+export const STANDART_TEXT_BOX_POS = new Vector(0, 190);
 export const TEXT_BOX_SIZE_DIFF = new Vector(200, 60);
-const STANDART_BUTTON_SIZE = new Vector(220, 80);
+const STANDART_BUTTON_SIZE = new Vector(250, 100);
 const BUTTON_Y_OFFSET = 60;
 const DISTANCE_BETWEEN_ENEMIES = canvas.width / 4;
 const ENEMIES_POS_Y = -canvas.height / 4.4;
@@ -65,9 +65,10 @@ const HEART_SIZE = new Vector(32, 32);
 export enum GameState {
     FIGHT,
     WONDER,
+    MAP_EDIT,
 }
 
-export let state = GameState.WONDER;
+export let state = GameState.MAP_EDIT;
 
 export class Heart {
     pos = new Vector(0, 0);

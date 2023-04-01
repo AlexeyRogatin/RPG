@@ -4,11 +4,11 @@ import { Img } from "./resources";
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-export const FIGHT_IMAGE_SCALING = 3.8;
+export const FIGHT_IMAGE_SCALING = 4.3;
 
 export const TRANSPARENCY = 0.4;
 
-export const TEXT_KEGEL = 36;
+export const TEXT_KEGEL = 45;
 
 export let camera = {
     pos: new Vector(0, 0),
@@ -19,8 +19,8 @@ let SCREEN_RATIO = 16 / 9;
 
 function handleResize() {
     const rect = canvas.getBoundingClientRect();
-    canvas.width = 1600;
-    canvas.height = 900;
+    canvas.width = 1840;
+    canvas.height = 1040;
     canvas.style.height = (rect.width / SCREEN_RATIO) + 'px';
 }
 

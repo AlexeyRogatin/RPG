@@ -213,8 +213,8 @@ System.register("drawing", ["math"], function (exports_4, context_4) {
     var __moduleName = context_4 && context_4.id;
     function handleResize() {
         const rect = canvas.getBoundingClientRect();
-        canvas.width = 1600;
-        canvas.height = 900;
+        canvas.width = 1840;
+        canvas.height = 1040;
         canvas.style.height = (rect.width / SCREEN_RATIO) + 'px';
     }
     function drawRect(x, y, width, height, angle, color, lineWidth = 0, transparency = 1) {
@@ -351,9 +351,9 @@ System.register("drawing", ["math"], function (exports_4, context_4) {
         execute: function () {
             exports_4("canvas", canvas = document.getElementById("canvas"));
             ctx = canvas.getContext("2d");
-            exports_4("FIGHT_IMAGE_SCALING", FIGHT_IMAGE_SCALING = 3.8);
+            exports_4("FIGHT_IMAGE_SCALING", FIGHT_IMAGE_SCALING = 4.3);
             exports_4("TRANSPARENCY", TRANSPARENCY = 0.4);
-            exports_4("TEXT_KEGEL", TEXT_KEGEL = 36);
+            exports_4("TEXT_KEGEL", TEXT_KEGEL = 45);
             exports_4("camera", camera = {
                 pos: new math_2.Vector(0, 0),
                 scale: 0
@@ -364,9 +364,9 @@ System.register("drawing", ["math"], function (exports_4, context_4) {
         }
     };
 });
-System.register("input", ["drawing"], function (exports_5, context_5) {
+System.register("input", ["drawing", "math"], function (exports_5, context_5) {
     "use strict";
-    var drawing_1, Key, keyCodes, upKey, downKey, leftKey, rightKey, zKey, xKey, enterKey;
+    var drawing_1, math_3, Key, Mouse, keyCodes, upKey, downKey, leftKey, rightKey, zKey, xKey, enterKey, nKey, cKey, lKey, iKey, eKey, dKey, mouse;
     var __moduleName = context_5 && context_5.id;
     function handleKeyDown(key) {
         if (!key.isDown) {
@@ -388,12 +388,16 @@ System.register("input", ["drawing"], function (exports_5, context_5) {
         for (let keyIndex = 0; keyIndex < Key.keys.length; keyIndex++) {
             clearKey(Key.keys[keyIndex]);
         }
+        clearKey(mouse);
     }
     exports_5("clearKeys", clearKeys);
     return {
         setters: [
             function (drawing_1_1) {
                 drawing_1 = drawing_1_1;
+            },
+            function (math_3_1) {
+                math_3 = math_3_1;
             }
         ],
         execute: function () {
@@ -407,6 +411,15 @@ System.register("input", ["drawing"], function (exports_5, context_5) {
                 }
             };
             Key.keys = [];
+            Mouse = class Mouse {
+                constructor() {
+                    this.pos = new math_3.Vector(0, 0);
+                    this.worldPos = new math_3.Vector(0, 0);
+                    this.isDown = false;
+                    this.wentDown = false;
+                    this.wentUp = false;
+                }
+            };
             (function (keyCodes) {
                 keyCodes[keyCodes["UP"] = 38] = "UP";
                 keyCodes[keyCodes["DOWN"] = 40] = "DOWN";
@@ -415,6 +428,12 @@ System.register("input", ["drawing"], function (exports_5, context_5) {
                 keyCodes[keyCodes["Z"] = 90] = "Z";
                 keyCodes[keyCodes["X"] = 88] = "X";
                 keyCodes[keyCodes["ENTER"] = 13] = "ENTER";
+                keyCodes[keyCodes["N"] = 78] = "N";
+                keyCodes[keyCodes["C"] = 67] = "C";
+                keyCodes[keyCodes["L"] = 76] = "L";
+                keyCodes[keyCodes["I"] = 73] = "I";
+                keyCodes[keyCodes["E"] = 69] = "E";
+                keyCodes[keyCodes["D"] = 68] = "D";
             })(keyCodes || (keyCodes = {}));
             exports_5("upKey", upKey = new Key(keyCodes.UP));
             exports_5("downKey", downKey = new Key(keyCodes.DOWN));
@@ -423,6 +442,13 @@ System.register("input", ["drawing"], function (exports_5, context_5) {
             exports_5("zKey", zKey = new Key(keyCodes.Z));
             exports_5("xKey", xKey = new Key(keyCodes.X));
             exports_5("enterKey", enterKey = new Key(keyCodes.ENTER));
+            exports_5("nKey", nKey = new Key(keyCodes.N));
+            exports_5("cKey", cKey = new Key(keyCodes.C));
+            exports_5("lKey", lKey = new Key(keyCodes.L));
+            exports_5("iKey", iKey = new Key(keyCodes.I));
+            exports_5("eKey", eKey = new Key(keyCodes.E));
+            exports_5("dKey", dKey = new Key(keyCodes.D));
+            exports_5("mouse", mouse = new Mouse());
             window.onkeydown = function onkeydown(event) {
                 for (let keyIndex = 0; keyIndex < Key.keys.length; keyIndex++) {
                     if (event.keyCode === Key.keys[keyIndex].keyCode) {
@@ -437,16 +463,28 @@ System.register("input", ["drawing"], function (exports_5, context_5) {
                     }
                 }
             };
+            window.onmousedown = function onmousedown(event) {
+                handleKeyDown(mouse);
+            };
+            window.onmouseup = function onmouseup(event) {
+                handleKeyUp(mouse);
+            };
+            window.onmousemove = function onmousemove(event) {
+                let rect = drawing_1.canvas.getBoundingClientRect();
+                mouse.pos.x = event.clientX;
+                mouse.pos.y = event.clientY;
+                mouse.worldPos.x = (event.clientX * drawing_1.canvas.width / rect.width - drawing_1.canvas.width / 2 + drawing_1.camera.pos.x - rect.left);
+                mouse.worldPos.y = (event.clientY * drawing_1.canvas.height / rect.height - drawing_1.canvas.height / 2 + drawing_1.camera.pos.y - rect.top);
+            };
             document.addEventListener("mousedown", function mouseDown(event) {
                 drawing_1.canvas.requestFullscreen();
-                drawing_1.canvas.requestPointerLock();
             });
         }
     };
 });
 System.register("textBox", ["drawing", "math", "enemies", "input", "timers"], function (exports_6, context_6) {
     "use strict";
-    var drawing_2, math_3, drawing_3, enemies_1, input_1, timers_2, CHAR_PAUSE, WORD_PAUSE, PARAGRAPH_PAUSE, TextBox;
+    var drawing_2, math_4, drawing_3, enemies_1, input_1, timers_2, CHAR_PAUSE, WORD_PAUSE, PARAGRAPH_PAUSE, TextBox;
     var __moduleName = context_6 && context_6.id;
     return {
         setters: [
@@ -454,8 +492,8 @@ System.register("textBox", ["drawing", "math", "enemies", "input", "timers"], fu
                 drawing_2 = drawing_2_1;
                 drawing_3 = drawing_2_1;
             },
-            function (math_3_1) {
-                math_3 = math_3_1;
+            function (math_4_1) {
+                math_4 = math_4_1;
             },
             function (enemies_1_1) {
                 enemies_1 = enemies_1_1;
@@ -474,8 +512,8 @@ System.register("textBox", ["drawing", "math", "enemies", "input", "timers"], fu
             TextBox = class TextBox {
                 constructor(kegel = drawing_2.TEXT_KEGEL, color = "white") {
                     this.charTimer = new timers_2.Timer(0);
-                    this.pos = new math_3.Vector(0, 0);
-                    this.size = new math_3.Vector(0, 0);
+                    this.pos = new math_4.Vector(0, 0);
+                    this.size = new math_4.Vector(0, 0);
                     this.charIndex = 0;
                     this.partText = "";
                     this.texts = [];
@@ -510,7 +548,7 @@ System.register("textBox", ["drawing", "math", "enemies", "input", "timers"], fu
                             else {
                                 this.partText = "";
                                 this.charIndex = 0;
-                                this.partIndex = math_3.clamp(this.partIndex + 1, 0, this.partCount - 1);
+                                this.partIndex = math_4.clamp(this.partIndex + 1, 0, this.partCount - 1);
                             }
                         }
                     }
@@ -558,7 +596,7 @@ System.register("dialogueBox", ["resources", "drawing", "textBox"], function (ex
             }
         ],
         execute: function () {
-            DIALOGUE_BOX_KEGEL = 22;
+            DIALOGUE_BOX_KEGEL = 28;
             DIALOGUE_FONT_COLOR = "black";
             DIALOGUE_BOX_COLOR = "white";
             DIALOGUE_BOX_BORDER = resources_1.imgDialogueBoxCorner.width * drawing_4.FIGHT_IMAGE_SCALING;
@@ -568,13 +606,13 @@ System.register("dialogueBox", ["resources", "drawing", "textBox"], function (ex
                     this.textBox = new textBox_1.TextBox(DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR);
                 }
                 drawDialogueRect() {
-                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 2, DIALOGUE_BOX_BORDER + 2, 0, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 2, DIALOGUE_BOX_BORDER + 2, Math.PI / 2, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 2, DIALOGUE_BOX_BORDER + 2, Math.PI, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 2, DIALOGUE_BOX_BORDER + 2, Math.PI * 3 / 2, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_TAIL) / 2 - DIALOGUE_BOX_BORDER, this.textBox.pos.y - (this.textBox.size.y - DIALOGUE_BOX_TAIL) / 2, DIALOGUE_BOX_BORDER + 2, DIALOGUE_BOX_BORDER + 2, 0, resources_1.imgDialogueBoxTail);
-                    drawing_4.drawRect(this.textBox.pos.x, this.textBox.pos.y, this.textBox.size.x + 2, this.textBox.size.y + DIALOGUE_BOX_BORDER * 2 + 2, 0, DIALOGUE_BOX_COLOR);
-                    drawing_4.drawRect(this.textBox.pos.x, this.textBox.pos.y, this.textBox.size.x + DIALOGUE_BOX_BORDER * 2 + 2, this.textBox.size.y + 2, 0, DIALOGUE_BOX_COLOR);
+                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, resources_1.imgDialogueBoxCorner);
+                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI / 2, resources_1.imgDialogueBoxCorner);
+                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI, resources_1.imgDialogueBoxCorner);
+                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI * 3 / 2, resources_1.imgDialogueBoxCorner);
+                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_TAIL) / 2 - DIALOGUE_BOX_BORDER, this.textBox.pos.y - (this.textBox.size.y - DIALOGUE_BOX_TAIL) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, resources_1.imgDialogueBoxTail);
+                    drawing_4.drawRect(this.textBox.pos.x, this.textBox.pos.y, this.textBox.size.x + 4, this.textBox.size.y + DIALOGUE_BOX_BORDER * 2 + 4, 0, DIALOGUE_BOX_COLOR);
+                    drawing_4.drawRect(this.textBox.pos.x, this.textBox.pos.y, this.textBox.size.x + DIALOGUE_BOX_BORDER * 2 + 4, this.textBox.size.y + 4, 0, DIALOGUE_BOX_COLOR);
                 }
                 setPos(pos, size) {
                     this.textBox.setPos(pos, size);
@@ -706,7 +744,7 @@ System.register("music", ["timers"], function (exports_9, context_9) {
 });
 System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "resources", "music"], function (exports_10, context_10) {
     "use strict";
-    var math_4, math_5, dialogueBox_1, drawing_5, localization_1, resources_2, music_1, ENEMY_SPARED, DIALOGUE_BOX_OFFSET, DIALOGUE_BOX_SIZE, PARAGRAPH_SYM, Enemy, emptyFunction, Act, Transitions, BodyPart, InvisibleMan;
+    var math_5, math_6, dialogueBox_1, drawing_5, localization_1, resources_2, music_1, ENEMY_SPARED, DIALOGUE_BOX_OFFSET, DIALOGUE_BOX_SIZE, PARAGRAPH_SYM, Enemy, emptyFunction, Act, Transitions, BodyPart, InvisibleMan;
     var __moduleName = context_10 && context_10.id;
     function checkText(enemies, activeEnemy, activeAct, heart) {
         enemies[activeEnemy].acts[activeAct].text = enemies[activeEnemy].name + "\n" + localization_1.getString("fight.interface.dmg") + " " +
@@ -716,9 +754,9 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
     }
     return {
         setters: [
-            function (math_4_1) {
-                math_4 = math_4_1;
-                math_5 = math_4_1;
+            function (math_5_1) {
+                math_5 = math_5_1;
+                math_6 = math_5_1;
             },
             function (dialogueBox_1_1) {
                 dialogueBox_1 = dialogueBox_1_1;
@@ -738,12 +776,12 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
         ],
         execute: function () {
             exports_10("ENEMY_SPARED", ENEMY_SPARED = -1);
-            DIALOGUE_BOX_OFFSET = new math_4.Vector(200, 0);
-            DIALOGUE_BOX_SIZE = new math_4.Vector(140, 140);
+            DIALOGUE_BOX_OFFSET = new math_5.Vector(230, 0);
+            DIALOGUE_BOX_SIZE = new math_5.Vector(180, 210);
             exports_10("PARAGRAPH_SYM", PARAGRAPH_SYM = "~");
             Enemy = class Enemy {
                 constructor() {
-                    this.pos = new math_4.Vector(0, 0);
+                    this.pos = new math_5.Vector(0, 0);
                     this.hitpoints = 0;
                     this.maxHitpoints = 0;
                     this.damage = 0;
@@ -766,7 +804,7 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
                 nextComment() {
                     let str = this.obligatoryComments.shift();
                     if (str === undefined) {
-                        str = this.defaultComments[math_5.getRandomInt(0, this.defaultComments.length - 1)];
+                        str = this.defaultComments[math_6.getRandomInt(0, this.defaultComments.length - 1)];
                     }
                     return str;
                 }
@@ -792,7 +830,7 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
                 nextPhrase() {
                     let str = this.obligatoryPhrases.shift();
                     if (str === undefined) {
-                        str = this.defaultPhrases[math_5.getRandomInt(0, this.defaultPhrases.length - 1)];
+                        str = this.defaultPhrases[math_6.getRandomInt(0, this.defaultPhrases.length - 1)];
                     }
                     return str;
                 }
@@ -879,10 +917,10 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
                         enemies[activeEnemy].obligatoryPhrases.push(localization_1.getString("enemy.invisibleman.phrases.reaction.threaten"));
                     }));
                     this.acts.push(new Act(localization_1.getString("enemy.invisibleman.action.ignore"), localization_1.getString("enemy.invisibleman.action.ignore.result"), (enemies, activeEnemy, activeAct, heart) => { enemies[activeEnemy].tempDamage += 1; }));
-                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManBoots, new math_4.Vector(0, 0), new math_4.Vector(0, 0), Transitions.NONE));
-                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManTrench, new math_4.Vector(0, -10), new math_4.Vector(0, 5), Transitions.SINUSOIDAL));
-                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManHead, new math_4.Vector(0, -10), new math_4.Vector(0, 20), Transitions.SINUSOIDAL));
-                    this.partsDefeated.push(new BodyPart(resources_2.imgInvisibleManDefeat, new math_4.Vector(-2, 0), new math_4.Vector(2, 0), Transitions.SINUSOIDAL));
+                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManBoots, new math_5.Vector(0, 0), new math_5.Vector(0, 0), Transitions.NONE));
+                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManTrench, new math_5.Vector(0, -10), new math_5.Vector(0, 5), Transitions.SINUSOIDAL));
+                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManHead, new math_5.Vector(0, -10), new math_5.Vector(0, 20), Transitions.SINUSOIDAL));
+                    this.partsDefeated.push(new BodyPart(resources_2.imgInvisibleManDefeat, new math_5.Vector(-2, 0), new math_5.Vector(2, 0), Transitions.SINUSOIDAL));
                     this.defaultComments.push(localization_1.getString("enemy.invisibleman.comments.random.1"));
                     this.defaultComments.push(localization_1.getString("enemy.invisibleman.comments.random.2"));
                     this.defaultComments.push(localization_1.getString("enemy.invisibleman.comments.random.3"));
@@ -901,12 +939,12 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
 });
 System.register("choiseBox", ["math", "drawing", "input"], function (exports_11, context_11) {
     "use strict";
-    var math_6, drawing_6, drawing_7, input_2, CHOICE_RESULT_NONE, Option, ChoiseBox;
+    var math_7, drawing_6, drawing_7, input_2, CHOICE_RESULT_NONE, Option, ChoiseBox;
     var __moduleName = context_11 && context_11.id;
     return {
         setters: [
-            function (math_6_1) {
-                math_6 = math_6_1;
+            function (math_7_1) {
+                math_7 = math_7_1;
             },
             function (drawing_6_1) {
                 drawing_6 = drawing_6_1;
@@ -942,9 +980,9 @@ System.register("choiseBox", ["math", "drawing", "input"], function (exports_11,
                 updateChoise(heartPos) {
                     this.currentChoise += Number(input_2.rightKey.wentDown) - Number(input_2.leftKey.wentDown);
                     this.currentChoise += 2 * (Number(input_2.downKey.wentDown) - Number(input_2.upKey.wentDown));
-                    this.currentChoise = math_6.clamp(this.currentChoise, 0, this.options.length - 1);
+                    this.currentChoise = math_7.clamp(this.currentChoise, 0, this.options.length - 1);
                     if (input_2.zKey.wentDown && this.options[this.currentChoise].available) {
-                        heartPos = new math_6.Vector(1000, 1000);
+                        heartPos = new math_7.Vector(1000, 1000);
                         this.result = this.currentChoise;
                         input_2.zKey.wentDown = false;
                     }
@@ -981,7 +1019,7 @@ System.register("choiseBox", ["math", "drawing", "input"], function (exports_11,
                     y -= rowsCount === 1 ? 0 : this.size.y / 2;
                     x += offsetX * (this.currentChoise % 2);
                     y += offsetY * Math.floor(this.currentChoise / 2);
-                    return new math_6.Vector(x, y);
+                    return new math_7.Vector(x, y);
                 }
             };
             exports_11("ChoiseBox", ChoiseBox);
@@ -990,13 +1028,13 @@ System.register("choiseBox", ["math", "drawing", "input"], function (exports_11,
 });
 System.register("fightButton", ["math", "drawing", "input"], function (exports_12, context_12) {
     "use strict";
-    var math_7, drawing_8, math_8, input_3, FightButton;
+    var math_8, drawing_8, math_9, input_3, FightButton;
     var __moduleName = context_12 && context_12.id;
     return {
         setters: [
-            function (math_7_1) {
-                math_7 = math_7_1;
-                math_8 = math_7_1;
+            function (math_8_1) {
+                math_8 = math_8_1;
+                math_9 = math_8_1;
             },
             function (drawing_8_1) {
                 drawing_8 = drawing_8_1;
@@ -1008,8 +1046,8 @@ System.register("fightButton", ["math", "drawing", "input"], function (exports_1
         execute: function () {
             FightButton = class FightButton {
                 constructor(pos, size, text, icon) {
-                    this.pos = new math_7.Vector(0, 0);
-                    this.size = new math_7.Vector(0, 0);
+                    this.pos = new math_8.Vector(0, 0);
+                    this.size = new math_8.Vector(0, 0);
                     this.pressed = false;
                     this.activated = false;
                     this.size = size;
@@ -1032,7 +1070,7 @@ System.register("fightButton", ["math", "drawing", "input"], function (exports_1
                     this.activated = false;
                 }
                 checkCollision(pos) {
-                    if (math_8.isInRect(pos, this.pos, this.size)) {
+                    if (math_9.isInRect(pos, this.pos, this.size)) {
                         this.pressed = true;
                         if (input_3.zKey.wentDown) {
                             this.activated = true;
@@ -1046,12 +1084,12 @@ System.register("fightButton", ["math", "drawing", "input"], function (exports_1
 });
 System.register("hitBox", ["math", "drawing", "input"], function (exports_13, context_13) {
     "use strict";
-    var math_9, drawing_9, input_4, MIN_SPEED, MAX_SPEED, HIT_WIDTH, HIT_MIN, HIT_MAX, HIT_VALUE_MISS, HitState, GREAT_HIT_MULTIPLIER, HitBox;
+    var math_10, drawing_9, input_4, MIN_SPEED, MAX_SPEED, HIT_WIDTH, HIT_MIN, HIT_MAX, HIT_VALUE_MISS, HitState, GREAT_HIT_MULTIPLIER, HitBox;
     var __moduleName = context_13 && context_13.id;
     return {
         setters: [
-            function (math_9_1) {
-                math_9 = math_9_1;
+            function (math_10_1) {
+                math_10 = math_10_1;
             },
             function (drawing_9_1) {
                 drawing_9 = drawing_9_1;
@@ -1076,8 +1114,8 @@ System.register("hitBox", ["math", "drawing", "input"], function (exports_13, co
             GREAT_HIT_MULTIPLIER = 2;
             HitBox = class HitBox {
                 constructor(pos, size) {
-                    this.pos = new math_9.Vector(0, 0);
-                    this.size = new math_9.Vector(0, 0);
+                    this.pos = new math_10.Vector(0, 0);
+                    this.size = new math_10.Vector(0, 0);
                     this.state = HitState.ENDED;
                     this.indicator = 0;
                     this.speed = 0;
@@ -1090,9 +1128,9 @@ System.register("hitBox", ["math", "drawing", "input"], function (exports_13, co
                 clear() {
                     this.state = HitState.PLAYING;
                     this.indicator = 0;
-                    this.speed = math_9.getRandomFloat(MIN_SPEED, MAX_SPEED) * this.size.x;
+                    this.speed = math_10.getRandomFloat(MIN_SPEED, MAX_SPEED) * this.size.x;
                     this.value = 0;
-                    this.hitPos = math_9.getRandomFloat(HIT_MIN, HIT_MAX) * this.size.x;
+                    this.hitPos = math_10.getRandomFloat(HIT_MIN, HIT_MAX) * this.size.x;
                 }
                 updateIndicator() {
                     if (this.state === HitState.LAND_HIT) {
@@ -1124,7 +1162,7 @@ System.register("hitBox", ["math", "drawing", "input"], function (exports_13, co
                 draw() {
                     let hitWidth = HIT_WIDTH * this.size.x;
                     drawing_9.drawRect(this.pos.x - this.size.x / 2 + this.hitPos, this.pos.y, hitWidth, this.size.y, 0, "red", 10);
-                    drawing_9.drawPolygon(this.pos.x - this.size.x / 2 + this.indicator, this.pos.y, "white", [new math_9.Vector(0, -this.size.y / 2), new math_9.Vector(0, this.size.y / 2)], 7);
+                    drawing_9.drawPolygon(this.pos.x - this.size.x / 2 + this.indicator, this.pos.y, "white", [new math_10.Vector(0, -this.size.y / 2), new math_10.Vector(0, this.size.y / 2)], 7);
                 }
             };
             exports_13("HitBox", HitBox);
@@ -1133,12 +1171,12 @@ System.register("hitBox", ["math", "drawing", "input"], function (exports_13, co
 });
 System.register("healthBox", ["math", "drawing", "timers"], function (exports_14, context_14) {
     "use strict";
-    var math_10, drawing_10, timers_4, STANDART_HEALTH_BAR_WIDTH, STANDART_HEALTH_BAR_HEIGHT, STANDART_HEALTH_BAR_TIME, STANDART_HEALTH_BAR_DEPLETION_TIME, DMG_OFFSET_Y, HealthBox;
+    var math_11, drawing_10, timers_4, STANDART_HEALTH_BAR_WIDTH, STANDART_HEALTH_BAR_HEIGHT, STANDART_HEALTH_BAR_TIME, STANDART_HEALTH_BAR_DEPLETION_TIME, DMG_OFFSET_Y, HealthBox;
     var __moduleName = context_14 && context_14.id;
     return {
         setters: [
-            function (math_10_1) {
-                math_10 = math_10_1;
+            function (math_11_1) {
+                math_11 = math_11_1;
             },
             function (drawing_10_1) {
                 drawing_10 = drawing_10_1;
@@ -1157,7 +1195,7 @@ System.register("healthBox", ["math", "drawing", "timers"], function (exports_14
                 constructor() {
                     this.timer = new timers_4.Timer(0);
                     this.ended = true;
-                    this.pos = new math_10.Vector(0, 0);
+                    this.pos = new math_11.Vector(0, 0);
                     this.startAmount = 0;
                     this.damage = 0;
                     this.maxAmount = 0;
@@ -1200,10 +1238,10 @@ System.register("healthBox", ["math", "drawing", "timers"], function (exports_14
 });
 System.register("movement", ["math", "input"], function (exports_15, context_15) {
     "use strict";
-    var math_11, input_5;
+    var math_12, input_5;
     var __moduleName = context_15 && context_15.id;
     function getMovingSpeed(speed) {
-        return new math_11.Vector((Number(input_5.rightKey.isDown) - Number(input_5.leftKey.isDown)) * speed.x, (Number(input_5.downKey.isDown) - Number(input_5.upKey.isDown)) * speed.y);
+        return new math_12.Vector((Number(input_5.rightKey.isDown) - Number(input_5.leftKey.isDown)) * speed.x, (Number(input_5.downKey.isDown) - Number(input_5.upKey.isDown)) * speed.y);
     }
     exports_15("getMovingSpeed", getMovingSpeed);
     function movePlayer(pos, speed) {
@@ -1212,8 +1250,8 @@ System.register("movement", ["math", "input"], function (exports_15, context_15)
     exports_15("movePlayer", movePlayer);
     return {
         setters: [
-            function (math_11_1) {
-                math_11 = math_11_1;
+            function (math_12_1) {
+                math_12 = math_12_1;
             },
             function (input_5_1) {
                 input_5 = input_5_1;
@@ -1259,7 +1297,7 @@ System.register("collisions", [], function (exports_16, context_16) {
 });
 System.register("fight", ["math", "drawing", "enemies", "resources", "box", "choiseBox", "fightButton", "localization", "hitBox", "healthBox", "textBox", "movement", "collisions", "input", "timers"], function (exports_17, context_17) {
     "use strict";
-    var math_12, drawing_11, enemies_2, resources_3, drawing_12, box_1, choiseBox_1, fightButton_1, resources_4, localization_2, hitBox_1, healthBox_1, textBox_2, resources_5, box_2, movement_1, collisions_1, movement_2, input_6, timers_5, STANDART_BOX_SIZE, STANDART_BOX_POS, STANDART_TEXT_BOX_SIZE, STANDART_TEXT_BOX_POS, TEXT_BOX_SIZE_DIFF, STANDART_BUTTON_SIZE, BUTTON_Y_OFFSET, DISTANCE_BETWEEN_ENEMIES, ENEMIES_POS_Y, BoxPoint, Button, FightState, TREMBLE_FREQUENCY, TREMBLE_AMOUNT, TEXT_BOX_OFFSET_X, HEART_SIZE, GameState, state, Heart, heart, Fight, fight;
+    var math_13, drawing_11, enemies_2, resources_3, drawing_12, box_1, choiseBox_1, fightButton_1, resources_4, localization_2, hitBox_1, healthBox_1, textBox_2, resources_5, box_2, movement_1, collisions_1, movement_2, input_6, timers_5, STANDART_BOX_SIZE, STANDART_BOX_POS, STANDART_TEXT_BOX_SIZE, STANDART_TEXT_BOX_POS, TEXT_BOX_SIZE_DIFF, STANDART_BUTTON_SIZE, BUTTON_Y_OFFSET, DISTANCE_BETWEEN_ENEMIES, ENEMIES_POS_Y, BoxPoint, Button, FightState, TREMBLE_FREQUENCY, TREMBLE_AMOUNT, TEXT_BOX_OFFSET_X, HEART_SIZE, GameState, state, Heart, heart, Fight, fight;
     var __moduleName = context_17 && context_17.id;
     function getEnemyPosX(enemyIndex) {
         let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
@@ -1273,7 +1311,7 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
         fight.comment = phrase;
         fight.textBox.setPos(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE.sub(TEXT_BOX_SIZE_DIFF));
         for (let enemyIndex = 0; enemyIndex < fight.enemies.length; enemyIndex++) {
-            fight.enemies[enemyIndex].pos = new math_12.Vector(getEnemyPosX(enemyIndex), ENEMIES_POS_Y);
+            fight.enemies[enemyIndex].pos = new math_13.Vector(getEnemyPosX(enemyIndex), ENEMIES_POS_Y);
         }
     }
     exports_17("startFight", startFight);
@@ -1393,7 +1431,7 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
                         let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
                         let xPos = -width / 2 + DISTANCE_BETWEEN_ENEMIES * fight.activeEnemy;
                         let damage = Math.ceil(heart.damage / fight.enemies[fight.activeEnemy].defence * fight.hitBox.value);
-                        fight.healthbox.playAnimation(new math_12.Vector(xPos, ENEMIES_POS_Y), fight.enemies[fight.activeEnemy].hitpoints, damage, fight.enemies[fight.activeEnemy].maxHitpoints);
+                        fight.healthbox.playAnimation(new math_13.Vector(xPos, ENEMIES_POS_Y), fight.enemies[fight.activeEnemy].hitpoints, damage, fight.enemies[fight.activeEnemy].maxHitpoints);
                         fight.enemies[fight.activeEnemy].hitpoints -= damage;
                     }
                     else if (!resources_5.animHit.playing && fight.healthbox.ended) {
@@ -1443,10 +1481,10 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
                 let tremblePower = Math.floor(fight.healthbox.timer.getTime() / TREMBLE_FREQUENCY);
                 addPosX = ((Math.floor(tremblePower) % 2) * 2 - 1) * TREMBLE_AMOUNT * tremblePower;
             }
-            enemy.draw(new math_12.Vector(posX + addPosX, ENEMIES_POS_Y), false);
+            enemy.draw(new math_13.Vector(posX + addPosX, ENEMIES_POS_Y), false);
         }
         else {
-            enemy.draw(new math_12.Vector(posX, ENEMIES_POS_Y));
+            enemy.draw(new math_13.Vector(posX, ENEMIES_POS_Y));
         }
     }
     function drawEnemies() {
@@ -1522,15 +1560,15 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
     function changeButtonInMainState() {
         if (fight.state === FightState.MAIN) {
             fight.activeButton = fight.activeButton + (Number(input_6.rightKey.wentDown) - Number(input_6.leftKey.wentDown));
-            fight.activeButton = math_12.clamp(fight.activeButton, 0, fight.buttons.length - 1);
-            fight.heart.pos = new math_12.Vector(fight.buttons[fight.activeButton].pos.x - fight.buttons[fight.activeButton].size.x / 3, fight.buttons[fight.activeButton].pos.y);
+            fight.activeButton = math_13.clamp(fight.activeButton, 0, fight.buttons.length - 1);
+            fight.heart.pos = new math_13.Vector(fight.buttons[fight.activeButton].pos.x - fight.buttons[fight.activeButton].size.x / 3, fight.buttons[fight.activeButton].pos.y);
         }
     }
     function updateButtons() {
         fight.buttons.forEach((button) => { button.updateButton(); button.checkCollision(fight.heart.pos); });
     }
     function loopFight() {
-        drawing_11.camera.pos = new math_12.Vector(0, 0);
+        drawing_11.camera.pos = new math_13.Vector(0, 0);
         drawing_11.clearCanvas("black");
         fight.box.updateTransition();
         changeButtonInMainState();
@@ -1548,8 +1586,8 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
     exports_17("loopFight", loopFight);
     return {
         setters: [
-            function (math_12_1) {
-                math_12 = math_12_1;
+            function (math_13_1) {
+                math_13 = math_13_1;
             },
             function (drawing_11_1) {
                 drawing_11 = drawing_11_1;
@@ -1600,12 +1638,12 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
             }
         ],
         execute: function () {
-            STANDART_BOX_SIZE = new math_12.Vector(300, 300);
-            STANDART_BOX_POS = new math_12.Vector(0, 130);
-            exports_17("STANDART_TEXT_BOX_SIZE", STANDART_TEXT_BOX_SIZE = new math_12.Vector(1200, 240));
-            exports_17("STANDART_TEXT_BOX_POS", STANDART_TEXT_BOX_POS = new math_12.Vector(0, 160));
-            exports_17("TEXT_BOX_SIZE_DIFF", TEXT_BOX_SIZE_DIFF = new math_12.Vector(200, 60));
-            STANDART_BUTTON_SIZE = new math_12.Vector(220, 80);
+            STANDART_BOX_SIZE = new math_13.Vector(300, 300);
+            STANDART_BOX_POS = new math_13.Vector(0, 130);
+            exports_17("STANDART_TEXT_BOX_SIZE", STANDART_TEXT_BOX_SIZE = new math_13.Vector(1500, 290));
+            exports_17("STANDART_TEXT_BOX_POS", STANDART_TEXT_BOX_POS = new math_13.Vector(0, 190));
+            exports_17("TEXT_BOX_SIZE_DIFF", TEXT_BOX_SIZE_DIFF = new math_13.Vector(200, 60));
+            STANDART_BUTTON_SIZE = new math_13.Vector(250, 100);
             BUTTON_Y_OFFSET = 60;
             DISTANCE_BETWEEN_ENEMIES = drawing_11.canvas.width / 4;
             ENEMIES_POS_Y = -drawing_11.canvas.height / 4.4;
@@ -1634,21 +1672,22 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
             TREMBLE_FREQUENCY = 6;
             TREMBLE_AMOUNT = 1;
             TEXT_BOX_OFFSET_X = 250;
-            HEART_SIZE = new math_12.Vector(32, 32);
+            HEART_SIZE = new math_13.Vector(32, 32);
             (function (GameState) {
                 GameState[GameState["FIGHT"] = 0] = "FIGHT";
                 GameState[GameState["WONDER"] = 1] = "WONDER";
+                GameState[GameState["MAP_EDIT"] = 2] = "MAP_EDIT";
             })(GameState || (GameState = {}));
             exports_17("GameState", GameState);
-            exports_17("state", state = GameState.WONDER);
+            exports_17("state", state = GameState.MAP_EDIT);
             Heart = class Heart {
                 constructor() {
-                    this.pos = new math_12.Vector(0, 0);
+                    this.pos = new math_13.Vector(0, 0);
                     this.collisionRadius = 18;
                     this.sprite = resources_3.imgHeart;
                     this.damage = 1;
                     this.defence = 1;
-                    this.speedConst = new math_12.Vector(2, 2);
+                    this.speedConst = new math_13.Vector(2, 2);
                 }
                 draw() {
                     drawing_12.drawImage(this.pos.x, this.pos.y, HEART_SIZE.x, HEART_SIZE.y, 0, this.sprite);
@@ -1662,13 +1701,13 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
                     this.fightTimer = new timers_5.Timer(-1);
                     this.enemies = [];
                     this.activeEnemy = -1;
-                    this.buttons = [new fightButton_1.FightButton(new math_12.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.fight"), resources_4.imgFight),
-                        new fightButton_1.FightButton(new math_12.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 2, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.action"), resources_4.imgAct),
-                        new fightButton_1.FightButton(new math_12.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 3, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.item"), resources_4.imgItem),
-                        new fightButton_1.FightButton(new math_12.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 4, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.mercy"), resources_4.imgMercy)];
+                    this.buttons = [new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.fight"), resources_4.imgFight),
+                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 2, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.action"), resources_4.imgAct),
+                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 3, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.item"), resources_4.imgItem),
+                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 4, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.mercy"), resources_4.imgMercy)];
                     this.activeButton = Button.FIGHT;
                     this.box = new box_1.Box();
-                    this.choiseBox = new choiseBox_1.ChoiseBox(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE.sub(new math_12.Vector(200, 90)));
+                    this.choiseBox = new choiseBox_1.ChoiseBox(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE.sub(new math_13.Vector(200, 90)));
                     this.textBox = new textBox_2.TextBox();
                     this.hitBox = new hitBox_1.HitBox(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE);
                     this.comment = "";
@@ -1676,7 +1715,7 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
                     this.heart = heart;
                 }
                 nextComment() {
-                    let randomIndex = math_12.getRandomInt(0, this.enemies.length - 1);
+                    let randomIndex = math_13.getRandomInt(0, this.enemies.length - 1);
                     let result = this.enemies[randomIndex].nextComment();
                     for (let enemyIndex = 0; enemyIndex < this.enemies.length; enemyIndex++) {
                         if (this.enemies[enemyIndex].obligatoryComments.length > 0) {
@@ -1692,19 +1731,19 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
 });
 System.register("box", ["math", "drawing", "fight"], function (exports_18, context_18) {
     "use strict";
-    var math_13, drawing_13, fight_1, BOX_TRANSITION_SPEED, POINT_EPSILON, Box;
+    var math_14, drawing_13, fight_1, BOX_TRANSITION_SPEED, POINT_EPSILON, Box;
     var __moduleName = context_18 && context_18.id;
     function getRectanglePoints(pos, size) {
-        return [new math_13.Vector(pos.x + size.x / 2, pos.y + size.y / 2),
-            new math_13.Vector(pos.x - size.x / 2, pos.y + size.y / 2),
-            new math_13.Vector(pos.x - size.x / 2, pos.y - size.y / 2),
-            new math_13.Vector(pos.x + size.x / 2, pos.y - size.y / 2)];
+        return [new math_14.Vector(pos.x + size.x / 2, pos.y + size.y / 2),
+            new math_14.Vector(pos.x - size.x / 2, pos.y + size.y / 2),
+            new math_14.Vector(pos.x - size.x / 2, pos.y - size.y / 2),
+            new math_14.Vector(pos.x + size.x / 2, pos.y - size.y / 2)];
     }
     exports_18("getRectanglePoints", getRectanglePoints);
     return {
         setters: [
-            function (math_13_1) {
-                math_13 = math_13_1;
+            function (math_14_1) {
+                math_14 = math_14_1;
             },
             function (drawing_13_1) {
                 drawing_13 = drawing_13_1;
@@ -1758,7 +1797,7 @@ System.register("box", ["math", "drawing", "fight"], function (exports_18, conte
 });
 System.register("wander", ["math", "movement", "resources", "drawing", "input", "fight", "enemies", "localization"], function (exports_19, context_19) {
     "use strict";
-    var math_14, movement_3, resources_6, drawing_14, input_7, fight_2, enemies_3, localization_3, WALK_ANIMATION_SPEED, RUN_ANIMATION_SPEED, WALK_SPEED, RUN_SPEED_MULTIPLIER, Player, Lexa, player;
+    var math_15, movement_3, resources_6, drawing_14, input_7, fight_2, enemies_3, localization_3, WALK_ANIMATION_SPEED, RUN_ANIMATION_SPEED, WALK_SPEED, RUN_SPEED_MULTIPLIER, Player, Lexa, player;
     var __moduleName = context_19 && context_19.id;
     function updatePlayer(player) {
         let multiplier = 1;
@@ -1785,8 +1824,8 @@ System.register("wander", ["math", "movement", "resources", "drawing", "input", 
     exports_19("loopWander", loopWander);
     return {
         setters: [
-            function (math_14_1) {
-                math_14 = math_14_1;
+            function (math_15_1) {
+                math_15 = math_15_1;
             },
             function (movement_3_1) {
                 movement_3 = movement_3_1;
@@ -1817,8 +1856,8 @@ System.register("wander", ["math", "movement", "resources", "drawing", "input", 
             RUN_SPEED_MULTIPLIER = 2;
             Player = class Player {
                 constructor() {
-                    this.pos = new math_14.Vector(0, 0);
-                    this.speedConst = new math_14.Vector(WALK_SPEED, WALK_SPEED);
+                    this.pos = new math_15.Vector(0, 0);
+                    this.speedConst = new math_15.Vector(WALK_SPEED, WALK_SPEED);
                     this.sprite = resources_6.imgNone;
                     this.frontIdle = resources_6.imgNone;
                     this.backIdle = resources_6.imgNone;
@@ -1902,58 +1941,10 @@ System.register("wander", ["math", "movement", "resources", "drawing", "input", 
         }
     };
 });
-System.register("index", ["drawing", "fight", "input", "timers", "wander"], function (exports_20, context_20) {
+System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (exports_20, context_20) {
     "use strict";
-    var drawing_15, fight_3, input_8, timers_6, wander_js_1;
+    var choiseBox_2, textBox_3, fight_3, InteractionType, Choise, Interaction, InteractionBox;
     var __moduleName = context_20 && context_20.id;
-    function loop() {
-        switch (fight_3.state) {
-            case fight_3.GameState.FIGHT:
-                {
-                    fight_3.loopFight();
-                }
-                break;
-            case fight_3.GameState.WONDER:
-                {
-                    wander_js_1.loopWander();
-                }
-                break;
-        }
-    }
-    function mainLoop() {
-        drawing_15.clearCanvas("grey");
-        loop();
-        input_8.clearKeys();
-        timers_6.Timer.updateTimers();
-        requestAnimationFrame(mainLoop);
-    }
-    return {
-        setters: [
-            function (drawing_15_1) {
-                drawing_15 = drawing_15_1;
-            },
-            function (fight_3_1) {
-                fight_3 = fight_3_1;
-            },
-            function (input_8_1) {
-                input_8 = input_8_1;
-            },
-            function (timers_6_1) {
-                timers_6 = timers_6_1;
-            },
-            function (wander_js_1_1) {
-                wander_js_1 = wander_js_1_1;
-            }
-        ],
-        execute: function () {
-            requestAnimationFrame(mainLoop);
-        }
-    };
-});
-System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (exports_21, context_21) {
-    "use strict";
-    var choiseBox_2, textBox_3, fight_4, InteractionType, Choise, Interaction, InteractionBox;
-    var __moduleName = context_21 && context_21.id;
     return {
         setters: [
             function (choiseBox_2_1) {
@@ -1962,8 +1953,8 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
             function (textBox_3_1) {
                 textBox_3 = textBox_3_1;
             },
-            function (fight_4_1) {
-                fight_4 = fight_4_1;
+            function (fight_3_1) {
+                fight_3 = fight_3_1;
             }
         ],
         execute: function () {
@@ -1978,7 +1969,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     this.cons = cons;
                 }
             };
-            exports_21("Choise", Choise);
+            exports_20("Choise", Choise);
             Interaction = class Interaction {
                 constructor() {
                     this.type = InteractionType.TEXT;
@@ -1998,7 +1989,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     return inter;
                 }
             };
-            exports_21("Interaction", Interaction);
+            exports_20("Interaction", Interaction);
             InteractionBox = class InteractionBox {
                 constructor(pos, size) {
                     this.interactions = [];
@@ -2008,8 +1999,8 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     this.pos = pos;
                     this.size = size;
                     this.textBox = new textBox_3.TextBox();
-                    this.textBox.setPos(pos, size.sub(fight_4.TEXT_BOX_SIZE_DIFF));
-                    this.choiseBox = new choiseBox_2.ChoiseBox(pos, size.sub(fight_4.TEXT_BOX_SIZE_DIFF));
+                    this.textBox.setPos(pos, size.sub(fight_3.TEXT_BOX_SIZE_DIFF));
+                    this.choiseBox = new choiseBox_2.ChoiseBox(pos, size.sub(fight_3.TEXT_BOX_SIZE_DIFF));
                 }
                 setInteraction(interactions) {
                     this.interactionIndex = 0;
@@ -2083,7 +2074,172 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     }
                 }
             };
-            exports_21("InteractionBox", InteractionBox);
+            exports_20("InteractionBox", InteractionBox);
+        }
+    };
+});
+System.register("location", ["math", "resources"], function (exports_21, context_21) {
+    "use strict";
+    var math_16, resources_7, TILE_SIZE_GAME, Tile, Interactable, Location;
+    var __moduleName = context_21 && context_21.id;
+    return {
+        setters: [
+            function (math_16_1) {
+                math_16 = math_16_1;
+            },
+            function (resources_7_1) {
+                resources_7 = resources_7_1;
+            }
+        ],
+        execute: function () {
+            exports_21("TILE_SIZE_GAME", TILE_SIZE_GAME = 80);
+            Tile = class Tile {
+                constructor() {
+                    this.sprite = resources_7.imgNone;
+                    this.colidable = false;
+                    this.script = () => { };
+                }
+            };
+            exports_21("Tile", Tile);
+            Interactable = class Interactable {
+                constructor() {
+                    this.sprite = resources_7.imgNone;
+                    this.pos = new math_16.Vector(0, 0);
+                    this.size = new math_16.Vector(0, 0);
+                    this.interactions = [];
+                }
+            };
+            exports_21("Interactable", Interactable);
+            Location = class Location {
+                constructor() {
+                    this.tiles = [];
+                    this.size = new math_16.Vector(0, 0);
+                    this.interactables = [];
+                }
+            };
+            exports_21("Location", Location);
+        }
+    };
+});
+System.register("mapEditor", ["drawing", "input", "location", "math"], function (exports_22, context_22) {
+    "use strict";
+    var drawing_15, input_8, location_1, math_17, CAMERA_SPEED, tileMap;
+    var __moduleName = context_22 && context_22.id;
+    function getIndex(x, y) {
+        return y * tileMap.size.x + x;
+    }
+    function moveCamera() {
+        drawing_15.camera.pos.x += (Number(input_8.rightKey.isDown) - Number(input_8.leftKey.isDown)) * CAMERA_SPEED;
+        drawing_15.camera.pos.y += (Number(input_8.downKey.isDown) - Number(input_8.upKey.isDown)) * CAMERA_SPEED;
+        let firstTile = tilePosition(0, 0);
+        let lastTile = tilePosition(tileMap.size.x - 1, tileMap.size.y - 1);
+        drawing_15.camera.pos.x = math_17.clamp(drawing_15.camera.pos.x, firstTile.x + drawing_15.canvas.width / 2 - location_1.TILE_SIZE_GAME / 2, lastTile.x - drawing_15.canvas.width / 2 + location_1.TILE_SIZE_GAME / 2);
+        drawing_15.camera.pos.y = math_17.clamp(drawing_15.camera.pos.y, firstTile.y + drawing_15.canvas.height / 2 - location_1.TILE_SIZE_GAME / 2, lastTile.y - drawing_15.canvas.height / 2 + location_1.TILE_SIZE_GAME / 2);
+    }
+    function tilePosition(x, y) {
+        let tilePos = new math_17.Vector(location_1.TILE_SIZE_GAME / 2 + x * location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME / 2 + y * location_1.TILE_SIZE_GAME)
+            .sub(new math_17.Vector(drawing_15.canvas.width, drawing_15.canvas.height).div(2));
+        return tilePos;
+    }
+    function loopEdit() {
+        if (input_8.nKey.wentDown) {
+            tileMap.size.x = Number(prompt("Input X tile count"));
+            tileMap.size.y = Number(prompt("Input Y tile count"));
+            for (let yIndex = 0; yIndex < tileMap.size.y; yIndex++) {
+                for (let xIndex = 0; xIndex < tileMap.size.x; xIndex++) {
+                    tileMap.tiles.push(new location_1.Tile());
+                }
+            }
+        }
+        if (input_8.eKey.wentDown) {
+            let str = prompt("Input file name");
+        }
+        moveCamera();
+        for (let yIndex = tileMap.size.y - 1; yIndex >= 0; yIndex--) {
+            for (let xIndex = 0; xIndex < tileMap.size.x; xIndex++) {
+                let tile = tileMap.tiles[getIndex(xIndex, yIndex)];
+                let tilePos = tilePosition(xIndex, yIndex);
+                drawing_15.drawRect(tilePos.x, tilePos.y, location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME, 0, "black", 1);
+                drawing_15.drawImage(tilePos.x, tilePos.y, location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME, 0, tile.sprite);
+                if (math_17.isInRect(input_8.mouse.worldPos, tilePos, new math_17.Vector(location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME))) {
+                    drawing_15.drawRect(tilePos.x, tilePos.y, location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME, 0, "green", 5);
+                }
+            }
+        }
+    }
+    exports_22("loopEdit", loopEdit);
+    return {
+        setters: [
+            function (drawing_15_1) {
+                drawing_15 = drawing_15_1;
+            },
+            function (input_8_1) {
+                input_8 = input_8_1;
+            },
+            function (location_1_1) {
+                location_1 = location_1_1;
+            },
+            function (math_17_1) {
+                math_17 = math_17_1;
+            }
+        ],
+        execute: function () {
+            CAMERA_SPEED = 10;
+            tileMap = new location_1.Location();
+        }
+    };
+});
+System.register("index", ["drawing", "fight", "input", "timers", "wander", "mapEditor"], function (exports_23, context_23) {
+    "use strict";
+    var drawing_16, fight_4, input_9, timers_6, wander_1, mapEditor_1;
+    var __moduleName = context_23 && context_23.id;
+    function loop() {
+        switch (fight_4.state) {
+            case fight_4.GameState.FIGHT:
+                {
+                    fight_4.loopFight();
+                }
+                break;
+            case fight_4.GameState.WONDER:
+                {
+                    wander_1.loopWander();
+                }
+                break;
+            case fight_4.GameState.MAP_EDIT: {
+                mapEditor_1.loopEdit();
+            }
+        }
+    }
+    function mainLoop() {
+        drawing_16.clearCanvas("grey");
+        loop();
+        input_9.clearKeys();
+        timers_6.Timer.updateTimers();
+        requestAnimationFrame(mainLoop);
+    }
+    return {
+        setters: [
+            function (drawing_16_1) {
+                drawing_16 = drawing_16_1;
+            },
+            function (fight_4_1) {
+                fight_4 = fight_4_1;
+            },
+            function (input_9_1) {
+                input_9 = input_9_1;
+            },
+            function (timers_6_1) {
+                timers_6 = timers_6_1;
+            },
+            function (wander_1_1) {
+                wander_1 = wander_1_1;
+            },
+            function (mapEditor_1_1) {
+                mapEditor_1 = mapEditor_1_1;
+            }
+        ],
+        execute: function () {
+            requestAnimationFrame(mainLoop);
         }
     };
 });

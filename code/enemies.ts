@@ -9,8 +9,8 @@ import { music } from "./music";
 
 export const ENEMY_SPARED = -1;
 
-const DIALOGUE_BOX_OFFSET = new Vector(200, 0);
-const DIALOGUE_BOX_SIZE = new Vector(140, 140);
+const DIALOGUE_BOX_OFFSET = new Vector(230, 0);
+const DIALOGUE_BOX_SIZE = new Vector(180, 210);
 
 export const PARAGRAPH_SYM = "~";
 

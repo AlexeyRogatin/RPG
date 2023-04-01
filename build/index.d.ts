@@ -79,9 +79,9 @@ declare module "drawing" {
     import { Vector } from "math";
     import { Img } from "resources";
     export const canvas: HTMLCanvasElement;
-    export const FIGHT_IMAGE_SCALING = 3.8;
+    export const FIGHT_IMAGE_SCALING = 4.3;
     export const TRANSPARENCY = 0.4;
-    export const TEXT_KEGEL = 36;
+    export const TEXT_KEGEL = 45;
     export let camera: {
         pos: Vector;
         scale: number;
@@ -94,6 +94,7 @@ declare module "drawing" {
     export function drawParagraph(x: number, y: number, text: string, kegel: number, font: string, bold: boolean, color: string, width?: number, interval?: number, textBaseline?: CanvasTextBaseline, textAlign?: CanvasTextAlign, transparency?: number, lineWidth?: number): void;
 }
 declare module "input" {
+    import { Vector } from "math";
     class Key {
         static keys: Key[];
         isDown: boolean;
@@ -102,6 +103,13 @@ declare module "input" {
         keyCode: number;
         constructor(keyCode: number);
     }
+    class Mouse {
+        pos: Vector;
+        worldPos: Vector;
+        isDown: boolean;
+        wentDown: boolean;
+        wentUp: boolean;
+    }
     export let upKey: Key;
     export let downKey: Key;
     export let leftKey: Key;
@@ -109,6 +117,13 @@ declare module "input" {
     export let zKey: Key;
     export let xKey: Key;
     export let enterKey: Key;
+    export let nKey: Key;
+    export let cKey: Key;
+    export let lKey: Key;
+    export let iKey: Key;
+    export let eKey: Key;
+    export let dKey: Key;
+    export let mouse: Mouse;
     export function clearKeys(): void;
 }
 declare module "textBox" {
@@ -309,7 +324,8 @@ declare module "fight" {
     export const TEXT_BOX_SIZE_DIFF: Vector;
     export enum GameState {
         FIGHT = 0,
-        WONDER = 1
+        WONDER = 1,
+        MAP_EDIT = 2
     }
     export let state: GameState;
     export class Heart {
@@ -341,7 +357,6 @@ declare module "box" {
 declare module "wander" {
     export function loopWander(): void;
 }
-declare module "index" { }
 declare module "interactionBox" {
     import { ChoiseBox, Option } from "choiseBox";
     import { Vector } from "math";
@@ -379,3 +394,29 @@ declare module "interactionBox" {
         draw(): void;
     }
 }
+declare module "location" {
+    import { Interaction } from "interactionBox";
+    import { Vector } from "math";
+    import { Img } from "resources";
+    export const TILE_SIZE_GAME = 80;
+    export class Tile {
+        sprite: Img;
+        colidable: boolean;
+        script: () => void;
+    }
+    export class Interactable {
+        sprite: Img;
+        pos: Vector;
+        size: Vector;
+        interactions: Interaction[];
+    }
+    export class Location {
+        tiles: Tile[];
+        size: Vector;
+        interactables: Interactable[];
+    }
+}
+declare module "mapEditor" {
+    export function loopEdit(): void;
+}
+declare module "index" { }
