@@ -1,7 +1,7 @@
 const LOCAL_ENGLISH = 0;
 const LOCAL_RUSSIAN = 1;
 
-let local = LOCAL_RUSSIAN;
+let local = LOCAL_ENGLISH;
 
 export function getString(string: string) {
     switch (local) {

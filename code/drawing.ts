@@ -1,4 +1,4 @@
-import { Vector } from "math";
+import { Vector } from "./math";
 import { Img } from "./resources";
 
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement;

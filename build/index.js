@@ -57,6 +57,12 @@ System.register("math", [], function (exports_1, context_1) {
                 div(c) {
                     return new Vector(this.x / c, this.y / c, this.z / c);
                 }
+                round() {
+                    return new Vector(Math.round(this.x), Math.round(this.y));
+                }
+                floor() {
+                    return new Vector(Math.floor(this.x), Math.floor(this.y));
+                }
             };
             exports_1("Vector", Vector);
         }
@@ -97,7 +103,7 @@ System.register("timers", [], function (exports_2, context_2) {
 });
 System.register("resources", ["timers", "math"], function (exports_3, context_3) {
     "use strict";
-    var timers_1, math_1, Img, AnimatedImg, imgNone, imgHeart, imgFight, imgAct, imgItem, imgMercy, imgDialogueBox, imgDialogueBoxCorner, imgDialogueBoxTail, imgInvisibleManBoots, imgInvisibleManTrench, imgInvisibleManHead, imgInvisibleManDefeat, animHit, imgLexa, imgLexaBack, imgLexaSideRight, imgLexaSideLeft, animLexaWalk, animLexaWalkBack, animLexaWalkSideRight, animLexaWalkSideLeft;
+    var timers_1, math_1, Img, AnimatedImg, images;
     var __moduleName = context_3 && context_3.id;
     function loadImage(src) {
         let img = new Image();
@@ -109,6 +115,22 @@ System.register("resources", ["timers", "math"], function (exports_3, context_3)
         let img = loadImage(src);
         return img;
     }
+    function getImage(key) {
+        let image = images[key];
+        if (image === undefined) {
+            image = images["none.bmp"];
+        }
+        return image;
+    }
+    exports_3("getImage", getImage);
+    function getAnimation(key) {
+        let image = images[key];
+        if (image === undefined) {
+            image = images["none.bmp"];
+        }
+        return image;
+    }
+    exports_3("getAnimation", getAnimation);
     return {
         setters: [
             function (timers_1_1) {
@@ -121,17 +143,23 @@ System.register("resources", ["timers", "math"], function (exports_3, context_3)
         execute: function () {
             Img = class Img {
                 constructor(src, invertedX = false, invertedY = false) {
+                    this.width = 0;
+                    this.height = 0;
+                    this.drawWidth = 0;
+                    this.drawHeight = 0;
                     this.img = loadImageFromData(src);
-                    this.width = this.img.width;
-                    this.height = this.img.height;
-                    this.drawWidth = this.img.width;
-                    this.drawHeight = this.img.height;
-                    if (invertedX) {
-                        this.drawWidth *= -1;
-                    }
-                    if (invertedY) {
-                        this.drawHeight *= -1;
-                    }
+                    this.img.onload = () => {
+                        this.width = this.img.width;
+                        this.height = this.img.height;
+                        this.drawWidth = this.img.width;
+                        this.drawHeight = this.img.height;
+                        if (invertedX) {
+                            this.drawWidth *= -1;
+                        }
+                        if (invertedY) {
+                            this.drawHeight *= -1;
+                        }
+                    };
                 }
                 updateImage() {
                 }
@@ -169,7 +197,7 @@ System.register("resources", ["timers", "math"], function (exports_3, context_3)
                             this.playing = false;
                         }
                     }
-                    let img = imgNone;
+                    let img = images["none.bmp"];
                     if (this.playing) {
                         img = this.images[this.images.length - 1 - Math.floor(this.changeTimer.getTime() / this.delay)];
                     }
@@ -181,29 +209,32 @@ System.register("resources", ["timers", "math"], function (exports_3, context_3)
                 }
             };
             exports_3("AnimatedImg", AnimatedImg);
-            exports_3("imgNone", imgNone = new Img("none.bmp"));
-            exports_3("imgHeart", imgHeart = new Img("heart.bmp"));
-            exports_3("imgFight", imgFight = new Img("fightIcon.bmp"));
-            exports_3("imgAct", imgAct = new Img("actIcon.bmp"));
-            exports_3("imgItem", imgItem = new Img("itemIcon.bmp"));
-            exports_3("imgMercy", imgMercy = new Img("mercyIcon.bmp"));
-            exports_3("imgDialogueBox", imgDialogueBox = new Img("dialogueBox.bmp"));
-            exports_3("imgDialogueBoxCorner", imgDialogueBoxCorner = new Img("dialogueBoxCorner.bmp"));
-            exports_3("imgDialogueBoxTail", imgDialogueBoxTail = new Img("dialogueBoxTail.bmp"));
-            exports_3("imgInvisibleManBoots", imgInvisibleManBoots = new Img("invisibleManBoots.bmp"));
-            exports_3("imgInvisibleManTrench", imgInvisibleManTrench = new Img("invisibleManCoat.bmp"));
-            exports_3("imgInvisibleManHead", imgInvisibleManHead = new Img("invisibleManHead.bmp"));
-            exports_3("imgInvisibleManDefeat", imgInvisibleManDefeat = new Img("invisibleManDefeat.bmp"));
-            exports_3("animHit", animHit = new AnimatedImg(false, false, "hit1.bmp", "hit2.bmp", "hit3.bmp", "hit4.bmp", "hit5.bmp", "hit6.bmp", "hit7.bmp"));
-            exports_3("imgLexa", imgLexa = new Img("lexaIdle.bmp"));
-            exports_3("imgLexaBack", imgLexaBack = new Img("lexaBack.bmp"));
-            exports_3("imgLexaSideRight", imgLexaSideRight = new Img("lexaSide.bmp"));
-            exports_3("imgLexaSideLeft", imgLexaSideLeft = new Img("lexaSide.bmp", true));
-            exports_3("animLexaWalk", animLexaWalk = new AnimatedImg(false, false, "lexaWalk1.bmp", "lexaIdle.bmp", "lexaWalk2.bmp", "lexaIdle.bmp"));
-            exports_3("animLexaWalkBack", animLexaWalkBack = new AnimatedImg(false, false, "lexaBackWalk1.bmp", "lexaBack.bmp", "lexaBackWalk2.bmp", "lexaBack.bmp"));
-            ;
-            exports_3("animLexaWalkSideRight", animLexaWalkSideRight = new AnimatedImg(false, false, "lexaSideWalk1.bmp", "lexaSide.bmp", "lexaSideWalk2.bmp", "lexaSide.bmp"));
-            exports_3("animLexaWalkSideLeft", animLexaWalkSideLeft = new AnimatedImg(true, false, "lexaSideWalk1.bmp", "lexaSide.bmp", "lexaSideWalk2.bmp", "lexaSide.bmp"));
+            images = {
+                "none.bmp": new Img("none.bmp"),
+                "heart.bmp": new Img("heart.bmp"),
+                "fightIcon.bmp": new Img("fightIcon.bmp"),
+                "actIcon.bmp": new Img("actIcon.bmp"),
+                "itemIcon.bmp": new Img("itemIcon.bmp"),
+                "mercyIcon.bmp": new Img("mercyIcon.bmp"),
+                "dialogueBox.bmp": new Img("dialogueBox.bmp"),
+                "dialogueBoxCorner.bmp": new Img("dialogueBoxCorner.bmp"),
+                "dialogueBoxTail.bmp": new Img("dialogueBoxTail.bmp"),
+                "invisibleManBoots.bmp": new Img("invisibleManBoots.bmp"),
+                "invisibleManCoat.bmp": new Img("invisibleManCoat.bmp"),
+                "invisibleManHead.bmp": new Img("invisibleManHead.bmp"),
+                "invisibleManDefeat.bmp": new Img("invisibleManDefeat.bmp"),
+                "hit.bmp": new AnimatedImg(false, false, "hit1.bmp", "hit2.bmp", "hit3.bmp", "hit4.bmp", "hit5.bmp", "hit6.bmp", "hit7.bmp"),
+                "lexaIdle.bmp": new Img("lexaIdle.bmp"),
+                "lexaBack.bmp": new Img("lexaBack.bmp"),
+                "lexaRight.bmp": new Img("lexaSide.bmp"),
+                "lexaLeft.bmp": new Img("lexaSide.bmp", true),
+                "wood.bmp": new Img("wood.bmp"),
+                "wall.bmp": new Img("wall.bmp"),
+                "lexaWalk.bmp": new AnimatedImg(false, false, "lexaWalk1.bmp", "lexaIdle.bmp", "lexaWalk2.bmp", "lexaIdle.bmp"),
+                "lexaBackWalk.bmp": new AnimatedImg(false, false, "lexaBackWalk1.bmp", "lexaBack.bmp", "lexaBackWalk2.bmp", "lexaBack.bmp"),
+                "lexaRightWalk.bmp": new AnimatedImg(false, false, "lexaSideWalk1.bmp", "lexaSide.bmp", "lexaSideWalk2.bmp", "lexaSide.bmp"),
+                "lexaLeftWalk.bmp": new AnimatedImg(true, false, "lexaSideWalk1.bmp", "lexaSide.bmp", "lexaSideWalk2.bmp", "lexaSide.bmp"),
+            };
         }
     };
 });
@@ -471,10 +502,10 @@ System.register("input", ["drawing", "math"], function (exports_5, context_5) {
             };
             window.onmousemove = function onmousemove(event) {
                 let rect = drawing_1.canvas.getBoundingClientRect();
-                mouse.pos.x = event.clientX;
-                mouse.pos.y = event.clientY;
-                mouse.worldPos.x = (event.clientX * drawing_1.canvas.width / rect.width - drawing_1.canvas.width / 2 + drawing_1.camera.pos.x - rect.left);
-                mouse.worldPos.y = (event.clientY * drawing_1.canvas.height / rect.height - drawing_1.canvas.height / 2 + drawing_1.camera.pos.y - rect.top);
+                mouse.pos.x = event.clientX * drawing_1.canvas.width / rect.width;
+                mouse.pos.y = event.clientY * drawing_1.canvas.height / rect.height;
+                mouse.worldPos.x = (mouse.pos.x - drawing_1.canvas.width / 2 + drawing_1.camera.pos.x - rect.left);
+                mouse.worldPos.y = (mouse.pos.y - drawing_1.canvas.height / 2 + drawing_1.camera.pos.y - rect.top);
             };
             document.addEventListener("mousedown", function mouseDown(event) {
                 drawing_1.canvas.requestFullscreen();
@@ -581,7 +612,7 @@ System.register("textBox", ["drawing", "math", "enemies", "input", "timers"], fu
 });
 System.register("dialogueBox", ["resources", "drawing", "textBox"], function (exports_7, context_7) {
     "use strict";
-    var resources_1, drawing_4, textBox_1, DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR, DIALOGUE_BOX_COLOR, DIALOGUE_BOX_BORDER, DIALOGUE_BOX_TAIL, DialogueBox;
+    var resources_1, drawing_4, textBox_1, DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR, DIALOGUE_BOX_COLOR, DialogueBox;
     var __moduleName = context_7 && context_7.id;
     return {
         setters: [
@@ -599,18 +630,18 @@ System.register("dialogueBox", ["resources", "drawing", "textBox"], function (ex
             DIALOGUE_BOX_KEGEL = 28;
             DIALOGUE_FONT_COLOR = "black";
             DIALOGUE_BOX_COLOR = "white";
-            DIALOGUE_BOX_BORDER = resources_1.imgDialogueBoxCorner.width * drawing_4.FIGHT_IMAGE_SCALING;
-            DIALOGUE_BOX_TAIL = resources_1.imgDialogueBoxTail.width * drawing_4.FIGHT_IMAGE_SCALING;
             DialogueBox = class DialogueBox {
                 constructor() {
                     this.textBox = new textBox_1.TextBox(DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR);
                 }
                 drawDialogueRect() {
-                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI / 2, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI * 3 / 2, resources_1.imgDialogueBoxCorner);
-                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_TAIL) / 2 - DIALOGUE_BOX_BORDER, this.textBox.pos.y - (this.textBox.size.y - DIALOGUE_BOX_TAIL) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, resources_1.imgDialogueBoxTail);
+                    const DIALOGUE_BOX_BORDER = resources_1.getImage("dialogueBoxCorner.bmp").width * drawing_4.FIGHT_IMAGE_SCALING;
+                    const DIALOGUE_BOX_TAIL = resources_1.getImage("dialogueBoxTail.bmp").width * drawing_4.FIGHT_IMAGE_SCALING;
+                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, resources_1.getImage("dialogueBoxCorner.bmp"));
+                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI / 2, resources_1.getImage("dialogueBoxCorner.bmp"));
+                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI, resources_1.getImage("dialogueBoxCorner.bmp"));
+                    drawing_4.drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2, this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI * 3 / 2, resources_1.getImage("dialogueBoxCorner.bmp"));
+                    drawing_4.drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_TAIL) / 2 - DIALOGUE_BOX_BORDER, this.textBox.pos.y - (this.textBox.size.y - DIALOGUE_BOX_TAIL) / 2, DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, resources_1.getImage("dialogueBoxTail.bmp"));
                     drawing_4.drawRect(this.textBox.pos.x, this.textBox.pos.y, this.textBox.size.x + 4, this.textBox.size.y + DIALOGUE_BOX_BORDER * 2 + 4, 0, DIALOGUE_BOX_COLOR);
                     drawing_4.drawRect(this.textBox.pos.x, this.textBox.pos.y, this.textBox.size.x + DIALOGUE_BOX_BORDER * 2 + 4, this.textBox.size.y + 4, 0, DIALOGUE_BOX_COLOR);
                 }
@@ -656,7 +687,7 @@ System.register("localization", [], function (exports_8, context_8) {
         execute: function () {
             LOCAL_ENGLISH = 0;
             LOCAL_RUSSIAN = 1;
-            local = LOCAL_RUSSIAN;
+            local = LOCAL_ENGLISH;
             englishLocalization = {
                 "fight.interface.won": "You won!",
                 "fight.interface.fight": "Fight",
@@ -917,10 +948,10 @@ System.register("enemies", ["math", "dialogueBox", "drawing", "localization", "r
                         enemies[activeEnemy].obligatoryPhrases.push(localization_1.getString("enemy.invisibleman.phrases.reaction.threaten"));
                     }));
                     this.acts.push(new Act(localization_1.getString("enemy.invisibleman.action.ignore"), localization_1.getString("enemy.invisibleman.action.ignore.result"), (enemies, activeEnemy, activeAct, heart) => { enemies[activeEnemy].tempDamage += 1; }));
-                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManBoots, new math_5.Vector(0, 0), new math_5.Vector(0, 0), Transitions.NONE));
-                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManTrench, new math_5.Vector(0, -10), new math_5.Vector(0, 5), Transitions.SINUSOIDAL));
-                    this.mainParts.push(new BodyPart(resources_2.imgInvisibleManHead, new math_5.Vector(0, -10), new math_5.Vector(0, 20), Transitions.SINUSOIDAL));
-                    this.partsDefeated.push(new BodyPart(resources_2.imgInvisibleManDefeat, new math_5.Vector(-2, 0), new math_5.Vector(2, 0), Transitions.SINUSOIDAL));
+                    this.mainParts.push(new BodyPart(resources_2.getImage("invisibleManBoots.bmp"), new math_5.Vector(0, 0), new math_5.Vector(0, 0), Transitions.NONE));
+                    this.mainParts.push(new BodyPart(resources_2.getImage("invisibleManCoat.bmp"), new math_5.Vector(0, -10), new math_5.Vector(0, 5), Transitions.SINUSOIDAL));
+                    this.mainParts.push(new BodyPart(resources_2.getImage("invisibleManHead.bmp"), new math_5.Vector(0, -10), new math_5.Vector(0, 20), Transitions.SINUSOIDAL));
+                    this.partsDefeated.push(new BodyPart(resources_2.getImage("invisibleManDefeat.bmp"), new math_5.Vector(-2, 0), new math_5.Vector(2, 0), Transitions.SINUSOIDAL));
                     this.defaultComments.push(localization_1.getString("enemy.invisibleman.comments.random.1"));
                     this.defaultComments.push(localization_1.getString("enemy.invisibleman.comments.random.2"));
                     this.defaultComments.push(localization_1.getString("enemy.invisibleman.comments.random.3"));
@@ -1297,7 +1328,7 @@ System.register("collisions", [], function (exports_16, context_16) {
 });
 System.register("fight", ["math", "drawing", "enemies", "resources", "box", "choiseBox", "fightButton", "localization", "hitBox", "healthBox", "textBox", "movement", "collisions", "input", "timers"], function (exports_17, context_17) {
     "use strict";
-    var math_13, drawing_11, enemies_2, resources_3, drawing_12, box_1, choiseBox_1, fightButton_1, resources_4, localization_2, hitBox_1, healthBox_1, textBox_2, resources_5, box_2, movement_1, collisions_1, movement_2, input_6, timers_5, STANDART_BOX_SIZE, STANDART_BOX_POS, STANDART_TEXT_BOX_SIZE, STANDART_TEXT_BOX_POS, TEXT_BOX_SIZE_DIFF, STANDART_BUTTON_SIZE, BUTTON_Y_OFFSET, DISTANCE_BETWEEN_ENEMIES, ENEMIES_POS_Y, BoxPoint, Button, FightState, TREMBLE_FREQUENCY, TREMBLE_AMOUNT, TEXT_BOX_OFFSET_X, HEART_SIZE, GameState, state, Heart, heart, Fight, fight;
+    var math_13, drawing_11, enemies_2, resources_3, drawing_12, box_1, choiseBox_1, fightButton_1, localization_2, hitBox_1, healthBox_1, textBox_2, box_2, movement_1, collisions_1, movement_2, input_6, timers_5, STANDART_BOX_SIZE, STANDART_BOX_POS, STANDART_TEXT_BOX_SIZE, STANDART_TEXT_BOX_POS, TEXT_BOX_SIZE_DIFF, STANDART_BUTTON_SIZE, BUTTON_Y_OFFSET, DISTANCE_BETWEEN_ENEMIES, ENEMIES_POS_Y, BoxPoint, Button, FightState, TREMBLE_FREQUENCY, TREMBLE_AMOUNT, TEXT_BOX_OFFSET_X, HEART_SIZE, GameState, state, Heart, heart, Fight, fight;
     var __moduleName = context_17 && context_17.id;
     function getEnemyPosX(enemyIndex) {
         let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
@@ -1425,16 +1456,16 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
             if (fight.hitBox.state !== hitBox_1.HitState.PLAYING) {
                 {
                     if (fight.hitBox.state === hitBox_1.HitState.LAND_HIT) {
-                        resources_5.animHit.startAnimation(10, false);
+                        resources_3.getAnimation("hit.bmp").startAnimation(10, false);
                     }
-                    else if (resources_5.animHit.changeTimer.getTime() === 0) {
+                    else if (resources_3.getAnimation("hit.bmp").changeTimer.getTime() === 0) {
                         let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
                         let xPos = -width / 2 + DISTANCE_BETWEEN_ENEMIES * fight.activeEnemy;
                         let damage = Math.ceil(heart.damage / fight.enemies[fight.activeEnemy].defence * fight.hitBox.value);
                         fight.healthbox.playAnimation(new math_13.Vector(xPos, ENEMIES_POS_Y), fight.enemies[fight.activeEnemy].hitpoints, damage, fight.enemies[fight.activeEnemy].maxHitpoints);
                         fight.enemies[fight.activeEnemy].hitpoints -= damage;
                     }
-                    else if (!resources_5.animHit.playing && fight.healthbox.ended) {
+                    else if (!resources_3.getAnimation("hit.bmp").playing && fight.healthbox.ended) {
                         if (!winCondition()) {
                             toStateDialogue();
                         }
@@ -1477,7 +1508,7 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
         if (fight.state === FightState.HIT && fight.hitBox.state === hitBox_1.HitState.ENDED &&
             fight.activeEnemy === enemyIndex) {
             let addPosX = 0;
-            if (!resources_5.animHit.playing) {
+            if (!resources_3.getAnimation("hit.bmp").playing) {
                 let tremblePower = Math.floor(fight.healthbox.timer.getTime() / TREMBLE_FREQUENCY);
                 addPosX = ((Math.floor(tremblePower) % 2) * 2 - 1) * TREMBLE_AMOUNT * tremblePower;
             }
@@ -1513,10 +1544,10 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
         }
         if (fight.state === FightState.HIT) {
             fight.hitBox.draw();
-            if (resources_5.animHit.playing) {
+            if (resources_3.getAnimation("hit.bmp").playing) {
                 let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
                 let xPos = -width / 2 + DISTANCE_BETWEEN_ENEMIES * fight.activeEnemy;
-                drawing_12.drawImage(xPos, ENEMIES_POS_Y, 70 * drawing_11.FIGHT_IMAGE_SCALING, 120 * drawing_11.FIGHT_IMAGE_SCALING, 0, resources_5.animHit);
+                drawing_12.drawImage(xPos, ENEMIES_POS_Y, 70 * drawing_11.FIGHT_IMAGE_SCALING, 120 * drawing_11.FIGHT_IMAGE_SCALING, 0, resources_3.getAnimation("hit.bmp"));
             }
             if (!fight.healthbox.ended) {
                 fight.healthbox.draw();
@@ -1598,8 +1629,6 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
             },
             function (resources_3_1) {
                 resources_3 = resources_3_1;
-                resources_4 = resources_3_1;
-                resources_5 = resources_3_1;
             },
             function (box_1_1) {
                 box_1 = box_1_1;
@@ -1679,12 +1708,12 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
                 GameState[GameState["MAP_EDIT"] = 2] = "MAP_EDIT";
             })(GameState || (GameState = {}));
             exports_17("GameState", GameState);
-            exports_17("state", state = GameState.MAP_EDIT);
+            exports_17("state", state = GameState.FIGHT);
             Heart = class Heart {
                 constructor() {
                     this.pos = new math_13.Vector(0, 0);
                     this.collisionRadius = 18;
-                    this.sprite = resources_3.imgHeart;
+                    this.sprite = resources_3.getImage("heart.bmp");
                     this.damage = 1;
                     this.defence = 1;
                     this.speedConst = new math_13.Vector(2, 2);
@@ -1701,10 +1730,10 @@ System.register("fight", ["math", "drawing", "enemies", "resources", "box", "cho
                     this.fightTimer = new timers_5.Timer(-1);
                     this.enemies = [];
                     this.activeEnemy = -1;
-                    this.buttons = [new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.fight"), resources_4.imgFight),
-                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 2, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.action"), resources_4.imgAct),
-                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 3, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.item"), resources_4.imgItem),
-                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 4, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.mercy"), resources_4.imgMercy)];
+                    this.buttons = [new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.fight"), resources_3.getImage("fightIcon.bmp")),
+                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 2, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.action"), resources_3.getImage("actIcon.bmp")),
+                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 3, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.item"), resources_3.getImage("itemIcon.bmp")),
+                        new fightButton_1.FightButton(new math_13.Vector(-drawing_11.canvas.width / 2 + drawing_11.canvas.width / 5 * 4, drawing_11.canvas.height / 2 - BUTTON_Y_OFFSET), STANDART_BUTTON_SIZE, localization_2.getString("fight.interface.mercy"), resources_3.getImage("mercyIcon.bmp"))];
                     this.activeButton = Button.FIGHT;
                     this.box = new box_1.Box();
                     this.choiseBox = new choiseBox_1.ChoiseBox(STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE.sub(new math_13.Vector(200, 90)));
@@ -1795,156 +1824,10 @@ System.register("box", ["math", "drawing", "fight"], function (exports_18, conte
         }
     };
 });
-System.register("wander", ["math", "movement", "resources", "drawing", "input", "fight", "enemies", "localization"], function (exports_19, context_19) {
+System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (exports_19, context_19) {
     "use strict";
-    var math_15, movement_3, resources_6, drawing_14, input_7, fight_2, enemies_3, localization_3, WALK_ANIMATION_SPEED, RUN_ANIMATION_SPEED, WALK_SPEED, RUN_SPEED_MULTIPLIER, Player, Lexa, player;
+    var choiseBox_2, textBox_3, fight_2, InteractionType, Choise, Interaction, InteractionBox;
     var __moduleName = context_19 && context_19.id;
-    function updatePlayer(player) {
-        let multiplier = 1;
-        if (input_7.xKey.isDown) {
-            player.changeAnimationsSpeed(RUN_ANIMATION_SPEED);
-            multiplier *= RUN_SPEED_MULTIPLIER;
-        }
-        else {
-            player.changeAnimationsSpeed(WALK_ANIMATION_SPEED);
-        }
-        let speed = movement_3.getMovingSpeed(player.speedConst.mul(multiplier));
-        player.chooseSprite(speed);
-        player.pos = movement_3.movePlayer(player.pos, speed);
-        drawing_14.camera.pos = player.pos;
-        player.draw();
-    }
-    function loopWander() {
-        if (input_7.enterKey.wentDown) {
-            fight_2.startFight([new enemies_3.InvisibleMan(), new enemies_3.InvisibleMan()], localization_3.getString("fight.start.enemy.invisibleman"));
-        }
-        updatePlayer(player);
-        drawing_14.drawRect(0, 0, 100, 100, 0, "red");
-    }
-    exports_19("loopWander", loopWander);
-    return {
-        setters: [
-            function (math_15_1) {
-                math_15 = math_15_1;
-            },
-            function (movement_3_1) {
-                movement_3 = movement_3_1;
-            },
-            function (resources_6_1) {
-                resources_6 = resources_6_1;
-            },
-            function (drawing_14_1) {
-                drawing_14 = drawing_14_1;
-            },
-            function (input_7_1) {
-                input_7 = input_7_1;
-            },
-            function (fight_2_1) {
-                fight_2 = fight_2_1;
-            },
-            function (enemies_3_1) {
-                enemies_3 = enemies_3_1;
-            },
-            function (localization_3_1) {
-                localization_3 = localization_3_1;
-            }
-        ],
-        execute: function () {
-            WALK_ANIMATION_SPEED = 10;
-            RUN_ANIMATION_SPEED = 6;
-            WALK_SPEED = 5;
-            RUN_SPEED_MULTIPLIER = 2;
-            Player = class Player {
-                constructor() {
-                    this.pos = new math_15.Vector(0, 0);
-                    this.speedConst = new math_15.Vector(WALK_SPEED, WALK_SPEED);
-                    this.sprite = resources_6.imgNone;
-                    this.frontIdle = resources_6.imgNone;
-                    this.backIdle = resources_6.imgNone;
-                    this.sideIdleRight = resources_6.imgNone;
-                    this.sideIdleLeft = resources_6.imgNone;
-                    this.frontMovement = new resources_6.AnimatedImg();
-                    this.backMovement = new resources_6.AnimatedImg();
-                    this.sideMovementRight = new resources_6.AnimatedImg();
-                    this.sideMovementLeft = new resources_6.AnimatedImg();
-                }
-                initWalkAnimations() {
-                    this.frontMovement.startAnimation(WALK_ANIMATION_SPEED, true);
-                    this.backMovement.startAnimation(WALK_ANIMATION_SPEED, true);
-                    this.sideMovementRight.startAnimation(WALK_ANIMATION_SPEED, true);
-                    this.sideMovementLeft.startAnimation(WALK_ANIMATION_SPEED, true);
-                }
-                changeAnimationsSpeed(delay) {
-                    this.frontMovement.changeDelay(delay);
-                    this.backMovement.changeDelay(delay);
-                    this.sideMovementRight.changeDelay(delay);
-                    this.sideMovementLeft.changeDelay(delay);
-                }
-                chooseSprite(speed) {
-                    if (speed.y > 0) {
-                        this.sprite = this.frontMovement;
-                    }
-                    else if (speed.y < 0) {
-                        this.sprite = this.backMovement;
-                    }
-                    else if (speed.x > 0) {
-                        this.sprite = this.sideMovementRight;
-                    }
-                    else if (speed.x < 0) {
-                        this.sprite = this.sideMovementLeft;
-                    }
-                    else {
-                        switch (this.sprite) {
-                            case this.frontMovement:
-                                {
-                                    this.sprite = this.frontIdle;
-                                }
-                                break;
-                            case this.backMovement:
-                                {
-                                    this.sprite = this.backIdle;
-                                }
-                                break;
-                            case this.sideMovementRight:
-                                {
-                                    this.sprite = this.sideIdleRight;
-                                }
-                                break;
-                            case this.sideMovementLeft:
-                                {
-                                    this.sprite = this.sideIdleLeft;
-                                }
-                                break;
-                        }
-                    }
-                }
-                draw() {
-                    drawing_14.drawImage(this.pos.x, this.pos.y, undefined, undefined, 0, this.sprite);
-                }
-            };
-            Lexa = class Lexa extends Player {
-                constructor() {
-                    super();
-                    this.sprite = resources_6.imgLexa;
-                    this.frontIdle = resources_6.imgLexa;
-                    this.backIdle = resources_6.imgLexaBack;
-                    this.sideIdleRight = resources_6.imgLexaSideRight;
-                    this.sideIdleLeft = resources_6.imgLexaSideLeft;
-                    this.frontMovement = resources_6.animLexaWalk;
-                    this.backMovement = resources_6.animLexaWalkBack;
-                    this.sideMovementRight = resources_6.animLexaWalkSideRight;
-                    this.sideMovementLeft = resources_6.animLexaWalkSideLeft;
-                    this.initWalkAnimations();
-                }
-            };
-            player = new Lexa();
-        }
-    };
-});
-System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (exports_20, context_20) {
-    "use strict";
-    var choiseBox_2, textBox_3, fight_3, InteractionType, Choise, Interaction, InteractionBox;
-    var __moduleName = context_20 && context_20.id;
     return {
         setters: [
             function (choiseBox_2_1) {
@@ -1953,8 +1836,8 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
             function (textBox_3_1) {
                 textBox_3 = textBox_3_1;
             },
-            function (fight_3_1) {
-                fight_3 = fight_3_1;
+            function (fight_2_1) {
+                fight_2 = fight_2_1;
             }
         ],
         execute: function () {
@@ -1969,7 +1852,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     this.cons = cons;
                 }
             };
-            exports_20("Choise", Choise);
+            exports_19("Choise", Choise);
             Interaction = class Interaction {
                 constructor() {
                     this.type = InteractionType.TEXT;
@@ -1989,7 +1872,7 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     return inter;
                 }
             };
-            exports_20("Interaction", Interaction);
+            exports_19("Interaction", Interaction);
             InteractionBox = class InteractionBox {
                 constructor(pos, size) {
                     this.interactions = [];
@@ -1999,8 +1882,8 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     this.pos = pos;
                     this.size = size;
                     this.textBox = new textBox_3.TextBox();
-                    this.textBox.setPos(pos, size.sub(fight_3.TEXT_BOX_SIZE_DIFF));
-                    this.choiseBox = new choiseBox_2.ChoiseBox(pos, size.sub(fight_3.TEXT_BOX_SIZE_DIFF));
+                    this.textBox.setPos(pos, size.sub(fight_2.TEXT_BOX_SIZE_DIFF));
+                    this.choiseBox = new choiseBox_2.ChoiseBox(pos, size.sub(fight_2.TEXT_BOX_SIZE_DIFF));
                 }
                 setInteraction(interactions) {
                     this.interactionIndex = 0;
@@ -2074,72 +1957,1055 @@ System.register("interactionBox", ["choiseBox", "textBox", "fight"], function (e
                     }
                 }
             };
-            exports_20("InteractionBox", InteractionBox);
+            exports_19("InteractionBox", InteractionBox);
         }
     };
 });
-System.register("location", ["math", "resources"], function (exports_21, context_21) {
+System.register("location", ["drawing", "math", "resources"], function (exports_20, context_20) {
     "use strict";
-    var math_16, resources_7, TILE_SIZE_GAME, Tile, Interactable, Location;
+    var drawing_14, math_15, resources_4, TILE_SIZE, SPRITE_SCALE, TILE_SIZE_GAME, Tile, Interactable, Location;
+    var __moduleName = context_20 && context_20.id;
+    function getIndex(tileMap, x, y) {
+        return y * tileMap.size.x + x;
+    }
+    exports_20("getIndex", getIndex);
+    function tilePosition(x, y) {
+        let tilePos = new math_15.Vector(TILE_SIZE_GAME / 2 + x * TILE_SIZE_GAME, TILE_SIZE_GAME / 2 + y * TILE_SIZE_GAME)
+            .sub(new math_15.Vector(drawing_14.canvas.width, drawing_14.canvas.height).div(2));
+        return tilePos;
+    }
+    exports_20("tilePosition", tilePosition);
+    function drawLocation(location) {
+        for (let yIndex = 0; yIndex < location.size.y; yIndex++) {
+            for (let xIndex = 0; xIndex < location.size.x; xIndex++) {
+                let tile = location.tiles[getIndex(location, xIndex, yIndex)];
+                let tilePos = tilePosition(xIndex, yIndex);
+                let tileImg = resources_4.getImage(tile.sprite);
+                drawing_14.drawImage(tilePos.x, tilePos.y - (tileImg.drawHeight * SPRITE_SCALE - TILE_SIZE_GAME) / 2, tileImg.drawWidth * SPRITE_SCALE, tileImg.drawHeight * SPRITE_SCALE, 0, tileImg);
+            }
+        }
+    }
+    exports_20("drawLocation", drawLocation);
+    return {
+        setters: [
+            function (drawing_14_1) {
+                drawing_14 = drawing_14_1;
+            },
+            function (math_15_1) {
+                math_15 = math_15_1;
+            },
+            function (resources_4_1) {
+                resources_4 = resources_4_1;
+            }
+        ],
+        execute: function () {
+            exports_20("TILE_SIZE", TILE_SIZE = 16);
+            exports_20("SPRITE_SCALE", SPRITE_SCALE = 5);
+            exports_20("TILE_SIZE_GAME", TILE_SIZE_GAME = TILE_SIZE * SPRITE_SCALE);
+            Tile = class Tile {
+                constructor() {
+                    this.sprite = "none.bmp";
+                    this.collision = new math_15.Vector(0, 0);
+                    this.script = () => { };
+                }
+            };
+            exports_20("Tile", Tile);
+            Interactable = class Interactable {
+                constructor() {
+                    this.sprite = "none.bmp";
+                    this.pos = new math_15.Vector(0, 0);
+                    this.size = new math_15.Vector(0, 0);
+                    this.interactions = [];
+                }
+            };
+            exports_20("Interactable", Interactable);
+            Location = class Location {
+                constructor() {
+                    this.tiles = [];
+                    this.size = new math_15.Vector(0, 0);
+                    this.interactables = [];
+                }
+            };
+            exports_20("Location", Location);
+        }
+    };
+});
+System.register("wander", ["math", "movement", "resources", "drawing", "input", "fight", "enemies", "localization", "location"], function (exports_21, context_21) {
+    "use strict";
+    var math_16, movement_3, resources_5, drawing_15, input_7, fight_3, enemies_3, localization_3, location_1, WALK_ANIMATION_SPEED, RUN_ANIMATION_SPEED, WALK_SPEED, RUN_SPEED_MULTIPLIER, Player, Lexa, player, location;
     var __moduleName = context_21 && context_21.id;
+    function updatePlayer(player) {
+        let multiplier = 1;
+        if (input_7.xKey.isDown) {
+            player.changeAnimationsSpeed(RUN_ANIMATION_SPEED);
+            multiplier *= RUN_SPEED_MULTIPLIER;
+        }
+        else {
+            player.changeAnimationsSpeed(WALK_ANIMATION_SPEED);
+        }
+        let speed = movement_3.getMovingSpeed(player.speedConst.mul(multiplier));
+        player.chooseSprite(speed);
+        player.pos = movement_3.movePlayer(player.pos, speed);
+        drawing_15.camera.pos = player.pos;
+        player.draw();
+    }
+    function loopWander() {
+        if (input_7.enterKey.wentDown) {
+            fight_3.startFight([new enemies_3.InvisibleMan(), new enemies_3.InvisibleMan()], localization_3.getString("fight.start.enemy.invisibleman"));
+        }
+        location_1.drawLocation(location);
+        updatePlayer(player);
+        drawing_15.drawRect(0, 0, 100, 100, 0, "red");
+    }
+    exports_21("loopWander", loopWander);
     return {
         setters: [
             function (math_16_1) {
                 math_16 = math_16_1;
             },
-            function (resources_7_1) {
-                resources_7 = resources_7_1;
+            function (movement_3_1) {
+                movement_3 = movement_3_1;
+            },
+            function (resources_5_1) {
+                resources_5 = resources_5_1;
+            },
+            function (drawing_15_1) {
+                drawing_15 = drawing_15_1;
+            },
+            function (input_7_1) {
+                input_7 = input_7_1;
+            },
+            function (fight_3_1) {
+                fight_3 = fight_3_1;
+            },
+            function (enemies_3_1) {
+                enemies_3 = enemies_3_1;
+            },
+            function (localization_3_1) {
+                localization_3 = localization_3_1;
+            },
+            function (location_1_1) {
+                location_1 = location_1_1;
             }
         ],
         execute: function () {
-            exports_21("TILE_SIZE_GAME", TILE_SIZE_GAME = 80);
-            Tile = class Tile {
+            WALK_ANIMATION_SPEED = 10;
+            RUN_ANIMATION_SPEED = 6;
+            WALK_SPEED = 5;
+            RUN_SPEED_MULTIPLIER = 2;
+            Player = class Player {
                 constructor() {
-                    this.sprite = resources_7.imgNone;
-                    this.colidable = false;
-                    this.script = () => { };
-                }
-            };
-            exports_21("Tile", Tile);
-            Interactable = class Interactable {
-                constructor() {
-                    this.sprite = resources_7.imgNone;
                     this.pos = new math_16.Vector(0, 0);
-                    this.size = new math_16.Vector(0, 0);
-                    this.interactions = [];
+                    this.speedConst = new math_16.Vector(WALK_SPEED, WALK_SPEED);
+                    this.sprite = resources_5.getImage("none.bmp");
+                    this.frontIdle = resources_5.getImage("none.bmp");
+                    this.backIdle = resources_5.getImage("none.bmp");
+                    this.sideIdleRight = resources_5.getImage("none.bmp");
+                    this.sideIdleLeft = resources_5.getImage("none.bmp");
+                    this.frontMovement = new resources_5.AnimatedImg();
+                    this.backMovement = new resources_5.AnimatedImg();
+                    this.sideMovementRight = new resources_5.AnimatedImg();
+                    this.sideMovementLeft = new resources_5.AnimatedImg();
+                }
+                initWalkAnimations() {
+                    this.frontMovement.startAnimation(WALK_ANIMATION_SPEED, true);
+                    this.backMovement.startAnimation(WALK_ANIMATION_SPEED, true);
+                    this.sideMovementRight.startAnimation(WALK_ANIMATION_SPEED, true);
+                    this.sideMovementLeft.startAnimation(WALK_ANIMATION_SPEED, true);
+                }
+                changeAnimationsSpeed(delay) {
+                    this.frontMovement.changeDelay(delay);
+                    this.backMovement.changeDelay(delay);
+                    this.sideMovementRight.changeDelay(delay);
+                    this.sideMovementLeft.changeDelay(delay);
+                }
+                chooseSprite(speed) {
+                    if (speed.y > 0) {
+                        this.sprite = this.frontMovement;
+                    }
+                    else if (speed.y < 0) {
+                        this.sprite = this.backMovement;
+                    }
+                    else if (speed.x > 0) {
+                        this.sprite = this.sideMovementRight;
+                    }
+                    else if (speed.x < 0) {
+                        this.sprite = this.sideMovementLeft;
+                    }
+                    else {
+                        switch (this.sprite) {
+                            case this.frontMovement:
+                                {
+                                    this.sprite = this.frontIdle;
+                                }
+                                break;
+                            case this.backMovement:
+                                {
+                                    this.sprite = this.backIdle;
+                                }
+                                break;
+                            case this.sideMovementRight:
+                                {
+                                    this.sprite = this.sideIdleRight;
+                                }
+                                break;
+                            case this.sideMovementLeft:
+                                {
+                                    this.sprite = this.sideIdleLeft;
+                                }
+                                break;
+                        }
+                    }
+                }
+                draw() {
+                    drawing_15.drawImage(this.pos.x, this.pos.y, undefined, undefined, 0, this.sprite);
                 }
             };
-            exports_21("Interactable", Interactable);
-            Location = class Location {
+            Lexa = class Lexa extends Player {
                 constructor() {
-                    this.tiles = [];
-                    this.size = new math_16.Vector(0, 0);
-                    this.interactables = [];
+                    super();
+                    this.sprite = resources_5.getImage("lexaIdle.bmp");
+                    this.frontIdle = resources_5.getImage("lexaIdle.bmp");
+                    this.backIdle = resources_5.getImage("lexaBack.bmp");
+                    this.sideIdleRight = resources_5.getImage("lexaRight.bmp");
+                    this.sideIdleLeft = resources_5.getImage("lexaLeft.bmp");
+                    this.frontMovement = resources_5.getAnimation("lexaWalk.bmp");
+                    this.backMovement = resources_5.getAnimation("lexaBackWalk.bmp");
+                    this.sideMovementRight = resources_5.getAnimation("lexaRightWalk.bmp");
+                    this.sideMovementLeft = resources_5.getAnimation("lexaLeftWalk.bmp");
+                    this.initWalkAnimations();
                 }
             };
-            exports_21("Location", Location);
+            player = new Lexa();
+            location = JSON.parse(`{
+    "tiles": [
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "none.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wood.bmp",
+            "collision": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        },
+        {
+            "sprite": "wall.bmp",
+            "collision": {
+                "x": 80,
+                "y": 80,
+                "z": 0
+            }
+        }
+    ],
+    "size": {
+        "x": 10,
+        "y": 10,
+        "z": 0
+    },
+    "interactables": []
+}`);
         }
     };
 });
-System.register("mapEditor", ["drawing", "input", "location", "math"], function (exports_22, context_22) {
+System.register("mapEditor", ["drawing", "input", "location", "math", "resources"], function (exports_22, context_22) {
     "use strict";
-    var drawing_15, input_8, location_1, math_17, CAMERA_SPEED, tileMap;
+    var drawing_16, input_8, location_2, math_17, resources_6, CAMERA_SPEED, tileMap, EditMode, editMode, image, collisionSize;
     var __moduleName = context_22 && context_22.id;
-    function getIndex(x, y) {
-        return y * tileMap.size.x + x;
-    }
     function moveCamera() {
-        drawing_15.camera.pos.x += (Number(input_8.rightKey.isDown) - Number(input_8.leftKey.isDown)) * CAMERA_SPEED;
-        drawing_15.camera.pos.y += (Number(input_8.downKey.isDown) - Number(input_8.upKey.isDown)) * CAMERA_SPEED;
-        let firstTile = tilePosition(0, 0);
-        let lastTile = tilePosition(tileMap.size.x - 1, tileMap.size.y - 1);
-        drawing_15.camera.pos.x = math_17.clamp(drawing_15.camera.pos.x, firstTile.x + drawing_15.canvas.width / 2 - location_1.TILE_SIZE_GAME / 2, lastTile.x - drawing_15.canvas.width / 2 + location_1.TILE_SIZE_GAME / 2);
-        drawing_15.camera.pos.y = math_17.clamp(drawing_15.camera.pos.y, firstTile.y + drawing_15.canvas.height / 2 - location_1.TILE_SIZE_GAME / 2, lastTile.y - drawing_15.canvas.height / 2 + location_1.TILE_SIZE_GAME / 2);
+        drawing_16.camera.pos.x += (Number(input_8.rightKey.isDown) - Number(input_8.leftKey.isDown)) * CAMERA_SPEED;
+        drawing_16.camera.pos.y += (Number(input_8.downKey.isDown) - Number(input_8.upKey.isDown)) * CAMERA_SPEED;
+        let firstTile = location_2.tilePosition(0, 0);
+        let lastTile = location_2.tilePosition(tileMap.size.x - 1, tileMap.size.y - 1);
+        drawing_16.camera.pos.x = math_17.clamp(drawing_16.camera.pos.x, firstTile.x + drawing_16.canvas.width / 2 - location_2.TILE_SIZE_GAME / 2, lastTile.x - drawing_16.canvas.width / 2 + location_2.TILE_SIZE_GAME / 2);
+        drawing_16.camera.pos.y = math_17.clamp(drawing_16.camera.pos.y, firstTile.y + drawing_16.canvas.height / 2 - location_2.TILE_SIZE_GAME / 2, lastTile.y - drawing_16.canvas.height / 2 + location_2.TILE_SIZE_GAME / 2);
     }
-    function tilePosition(x, y) {
-        let tilePos = new math_17.Vector(location_1.TILE_SIZE_GAME / 2 + x * location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME / 2 + y * location_1.TILE_SIZE_GAME)
-            .sub(new math_17.Vector(drawing_15.canvas.width, drawing_15.canvas.height).div(2));
-        return tilePos;
+    function makeTextFile(text) {
+        var data = new Blob([text], { type: 'text/plain' });
+        let textFile = window.URL.createObjectURL(data);
+        return textFile;
     }
     function loopEdit() {
         if (input_8.nKey.wentDown) {
@@ -2147,22 +3013,52 @@ System.register("mapEditor", ["drawing", "input", "location", "math"], function 
             tileMap.size.y = Number(prompt("Input Y tile count"));
             for (let yIndex = 0; yIndex < tileMap.size.y; yIndex++) {
                 for (let xIndex = 0; xIndex < tileMap.size.x; xIndex++) {
-                    tileMap.tiles.push(new location_1.Tile());
+                    tileMap.tiles.push(new location_2.Tile());
                 }
             }
         }
         if (input_8.eKey.wentDown) {
-            let str = prompt("Input file name");
+            let string = JSON.stringify(tileMap);
+            alert(makeTextFile(string));
+        }
+        if (input_8.iKey.wentDown) {
+            image = String(prompt("Введите код изображения"));
+            editMode = EditMode.TILES;
+        }
+        if (input_8.cKey.wentDown) {
+            collisionSize.x = Number(prompt("Input collision size X in tiles"));
+            collisionSize.y = Number(prompt("Input collision size Y in tiles"));
+            editMode = EditMode.COLLISION;
         }
         moveCamera();
-        for (let yIndex = tileMap.size.y - 1; yIndex >= 0; yIndex--) {
+        if (input_8.mouse.isDown) {
+            let pos = input_8.mouse.worldPos.add(new math_17.Vector(drawing_16.canvas.width, drawing_16.canvas.height).div(2)).div(location_2.TILE_SIZE_GAME).floor();
+            let index = location_2.getIndex(tileMap, pos.x, pos.y);
+            if (index >= 0 && index <= tileMap.size.x * tileMap.size.y) {
+                switch (editMode) {
+                    case EditMode.TILES:
+                        {
+                            tileMap.tiles[index].sprite = image;
+                        }
+                        break;
+                    case EditMode.COLLISION: {
+                        tileMap.tiles[index].collision = collisionSize.mul(location_2.TILE_SIZE_GAME);
+                    }
+                }
+            }
+        }
+        for (let yIndex = 0; yIndex < tileMap.size.y; yIndex++) {
             for (let xIndex = 0; xIndex < tileMap.size.x; xIndex++) {
-                let tile = tileMap.tiles[getIndex(xIndex, yIndex)];
-                let tilePos = tilePosition(xIndex, yIndex);
-                drawing_15.drawRect(tilePos.x, tilePos.y, location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME, 0, "black", 1);
-                drawing_15.drawImage(tilePos.x, tilePos.y, location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME, 0, tile.sprite);
-                if (math_17.isInRect(input_8.mouse.worldPos, tilePos, new math_17.Vector(location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME))) {
-                    drawing_15.drawRect(tilePos.x, tilePos.y, location_1.TILE_SIZE_GAME, location_1.TILE_SIZE_GAME, 0, "green", 5);
+                let tile = tileMap.tiles[location_2.getIndex(tileMap, xIndex, yIndex)];
+                let tilePos = location_2.tilePosition(xIndex, yIndex);
+                drawing_16.drawRect(tilePos.x, tilePos.y, location_2.TILE_SIZE_GAME, location_2.TILE_SIZE_GAME, 0, "black", 1);
+                let tileImg = resources_6.getImage(tile.sprite);
+                drawing_16.drawImage(tilePos.x, tilePos.y - (tileImg.drawHeight * location_2.SPRITE_SCALE - location_2.TILE_SIZE_GAME) / 2, tileImg.drawWidth * location_2.SPRITE_SCALE, tileImg.drawHeight * location_2.SPRITE_SCALE, 0, tileImg);
+                if (math_17.isInRect(input_8.mouse.worldPos, tilePos, new math_17.Vector(location_2.TILE_SIZE_GAME, location_2.TILE_SIZE_GAME))) {
+                    drawing_16.drawRect(tilePos.x, tilePos.y, location_2.TILE_SIZE_GAME, location_2.TILE_SIZE_GAME, 0, "green", 5);
+                }
+                if (tile.collision.length() > 0) {
+                    drawing_16.drawRect(tilePos.x, tilePos.y, tile.collision.x, tile.collision.y, 0, "purple", 5);
                 }
             }
         }
@@ -2170,28 +3066,41 @@ System.register("mapEditor", ["drawing", "input", "location", "math"], function 
     exports_22("loopEdit", loopEdit);
     return {
         setters: [
-            function (drawing_15_1) {
-                drawing_15 = drawing_15_1;
+            function (drawing_16_1) {
+                drawing_16 = drawing_16_1;
             },
             function (input_8_1) {
                 input_8 = input_8_1;
             },
-            function (location_1_1) {
-                location_1 = location_1_1;
+            function (location_2_1) {
+                location_2 = location_2_1;
             },
             function (math_17_1) {
                 math_17 = math_17_1;
+            },
+            function (resources_6_1) {
+                resources_6 = resources_6_1;
             }
         ],
         execute: function () {
             CAMERA_SPEED = 10;
-            tileMap = new location_1.Location();
+            tileMap = new location_2.Location();
+            ;
+            (function (EditMode) {
+                EditMode[EditMode["TILES"] = 0] = "TILES";
+                EditMode[EditMode["COLLISION"] = 1] = "COLLISION";
+                EditMode[EditMode["INTERACTABLES"] = 2] = "INTERACTABLES";
+            })(EditMode || (EditMode = {}));
+            ;
+            editMode = EditMode.TILES;
+            image = "";
+            collisionSize = new math_17.Vector(0, 0);
         }
     };
 });
-System.register("index", ["drawing", "fight", "input", "timers", "wander", "mapEditor"], function (exports_23, context_23) {
+System.register("index", ["drawing", "enemies", "fight", "input", "timers", "wander", "mapEditor"], function (exports_23, context_23) {
     "use strict";
-    var drawing_16, fight_4, input_9, timers_6, wander_1, mapEditor_1;
+    var drawing_17, enemies_4, fight_4, input_9, timers_6, wander_1, mapEditor_1, fps;
     var __moduleName = context_23 && context_23.id;
     function loop() {
         switch (fight_4.state) {
@@ -2210,17 +3119,25 @@ System.register("index", ["drawing", "fight", "input", "timers", "wander", "mapE
             }
         }
     }
+    function updateMouse() {
+        let rect = drawing_17.canvas.getBoundingClientRect();
+        input_9.mouse.worldPos.x = (input_9.mouse.pos.x - drawing_17.canvas.width / 2 + drawing_17.camera.pos.x - rect.left);
+        input_9.mouse.worldPos.y = (input_9.mouse.pos.y - drawing_17.canvas.height / 2 + drawing_17.camera.pos.y - rect.top);
+    }
     function mainLoop() {
-        drawing_16.clearCanvas("grey");
+        drawing_17.clearCanvas("grey");
+        updateMouse();
         loop();
         input_9.clearKeys();
         timers_6.Timer.updateTimers();
-        requestAnimationFrame(mainLoop);
     }
     return {
         setters: [
-            function (drawing_16_1) {
-                drawing_16 = drawing_16_1;
+            function (drawing_17_1) {
+                drawing_17 = drawing_17_1;
+            },
+            function (enemies_4_1) {
+                enemies_4 = enemies_4_1;
             },
             function (fight_4_1) {
                 fight_4 = fight_4_1;
@@ -2239,6 +3156,11 @@ System.register("index", ["drawing", "fight", "input", "timers", "wander", "mapE
             }
         ],
         execute: function () {
+            fight_4.startFight([new enemies_4.InvisibleMan()], "Wow");
+            fps = 60;
+            setInterval(() => {
+                requestAnimationFrame(mainLoop);
+            }, 1000 / fps);
             requestAnimationFrame(mainLoop);
         }
     };

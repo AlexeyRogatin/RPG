@@ -97,10 +97,10 @@ window.onmouseup = function onmouseup(event) {
 
 window.onmousemove = function onmousemove(event) {
     let rect = canvas.getBoundingClientRect();
-    mouse.pos.x = event.clientX;
-    mouse.pos.y = event.clientY;
-    mouse.worldPos.x = (event.clientX * canvas.width / rect.width - canvas.width / 2 + camera.pos.x - rect.left);
-    mouse.worldPos.y = (event.clientY * canvas.height / rect.height - canvas.height / 2 + camera.pos.y - rect.top);
+    mouse.pos.x = event.clientX * canvas.width / rect.width;
+    mouse.pos.y = event.clientY * canvas.height / rect.height;
+    mouse.worldPos.x = (mouse.pos.x - canvas.width / 2 + camera.pos.x - rect.left);
+    mouse.worldPos.y = (mouse.pos.y - canvas.height / 2 + camera.pos.y - rect.top);
 }
 
 function clearKey(key: Key | Mouse) {

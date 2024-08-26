@@ -1,33 +1,34 @@
-import { imgDialogueBoxCorner, imgDialogueBoxTail } from "resources";
-import { drawImage, drawRect, FIGHT_IMAGE_SCALING } from "drawing";
-import { TextBox } from "textBox";
+import { getImage } from "./resources";
+import { drawImage, drawRect, FIGHT_IMAGE_SCALING } from "./drawing";
+import { TextBox } from "./textBox";
 import { Vector } from "./math";
 
 const DIALOGUE_BOX_KEGEL = 28;
 const DIALOGUE_FONT_COLOR = "black";
 const DIALOGUE_BOX_COLOR = "white";
-const DIALOGUE_BOX_BORDER = imgDialogueBoxCorner.width * FIGHT_IMAGE_SCALING;
-const DIALOGUE_BOX_TAIL = imgDialogueBoxTail.width * FIGHT_IMAGE_SCALING;
 
 export class DialogueBox {
     textBox = new TextBox(DIALOGUE_BOX_KEGEL, DIALOGUE_FONT_COLOR);
 
     drawDialogueRect() {
+        const DIALOGUE_BOX_BORDER = getImage("dialogueBoxCorner.bmp").width * FIGHT_IMAGE_SCALING;
+        const DIALOGUE_BOX_TAIL = getImage("dialogueBoxTail.bmp").width * FIGHT_IMAGE_SCALING;
+
         drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2,
             this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2,
-            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, imgDialogueBoxCorner);
+            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, getImage("dialogueBoxCorner.bmp"));
         drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2,
             this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2,
-            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI / 2, imgDialogueBoxCorner);
+            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI / 2, getImage("dialogueBoxCorner.bmp"));
         drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2,
             this.textBox.pos.y + (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2,
-            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI, imgDialogueBoxCorner);
+            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI, getImage("dialogueBoxCorner.bmp"));
         drawImage(this.textBox.pos.x + (this.textBox.size.x + DIALOGUE_BOX_BORDER) / 2,
             this.textBox.pos.y - (this.textBox.size.y + DIALOGUE_BOX_BORDER) / 2,
-            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI * 3 / 2, imgDialogueBoxCorner);
+            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, Math.PI * 3 / 2, getImage("dialogueBoxCorner.bmp"));
         drawImage(this.textBox.pos.x - (this.textBox.size.x + DIALOGUE_BOX_TAIL) / 2 - DIALOGUE_BOX_BORDER,
             this.textBox.pos.y - (this.textBox.size.y - DIALOGUE_BOX_TAIL) / 2,
-            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, imgDialogueBoxTail);
+            DIALOGUE_BOX_BORDER + 4, DIALOGUE_BOX_BORDER + 4, 0, getImage("dialogueBoxTail.bmp"));
         drawRect(this.textBox.pos.x, this.textBox.pos.y,
             this.textBox.size.x + 4, this.textBox.size.y + DIALOGUE_BOX_BORDER * 2 + 4, 0, DIALOGUE_BOX_COLOR);
         drawRect(this.textBox.pos.x, this.textBox.pos.y,

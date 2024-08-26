@@ -24,13 +24,12 @@
 </head>
 
 <body>
-    <canvas id='canvas'>
-    </canvas>
+    <canvas id='canvas'></canvas>
 
-    <script src="system.js"></script>
-    <script src="named-register.js"></script>
+    <script src="../node_modules/systemjs/dist/system.js"></script>
+    <script src="../node_modules/systemjs/dist/extras/named-register.js"></script>
     <script src="index.js"></script>
-    <script>
+    <script type="module">
         System.import('index');
     </script>
 </body>

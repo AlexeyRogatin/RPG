@@ -2,9 +2,9 @@ import { Vector } from "./math";
 import { getRandomInt } from "./math";
 import { DialogueBox } from "./dialogueBox";
 import { TRANSPARENCY, drawImage } from "./drawing";
-import { Heart } from "fight";
-import { getString } from "localization";
-import { AnimatedImg, Img, imgInvisibleManBoots, imgInvisibleManDefeat, imgInvisibleManHead, imgInvisibleManTrench } from "./resources";
+import { Heart } from "./fight";
+import { getString } from "./localization";
+import { AnimatedImg, Img, getImage } from "./resources";
 import { music } from "./music";
 
 export const ENEMY_SPARED = -1;
@@ -205,11 +205,11 @@ export class InvisibleMan extends Enemy {
             getString("enemy.invisibleman.action.ignore.result"),
             (enemies, activeEnemy, activeAct, heart) => { enemies[activeEnemy].tempDamage += 1; }));
 
-        this.mainParts.push(new BodyPart(imgInvisibleManBoots, new Vector(0, 0), new Vector(0, 0), Transitions.NONE));
-        this.mainParts.push(new BodyPart(imgInvisibleManTrench, new Vector(0, -10), new Vector(0, 5), Transitions.SINUSOIDAL));
-        this.mainParts.push(new BodyPart(imgInvisibleManHead, new Vector(0, -10), new Vector(0, 20), Transitions.SINUSOIDAL));
+        this.mainParts.push(new BodyPart(getImage("invisibleManBoots.bmp"), new Vector(0, 0), new Vector(0, 0), Transitions.NONE));
+        this.mainParts.push(new BodyPart(getImage("invisibleManCoat.bmp"), new Vector(0, -10), new Vector(0, 5), Transitions.SINUSOIDAL));
+        this.mainParts.push(new BodyPart(getImage("invisibleManHead.bmp"), new Vector(0, -10), new Vector(0, 20), Transitions.SINUSOIDAL));
 
-        this.partsDefeated.push(new BodyPart(imgInvisibleManDefeat, new Vector(-2, 0), new Vector(2, 0), Transitions.SINUSOIDAL));
+        this.partsDefeated.push(new BodyPart(getImage("invisibleManDefeat.bmp"), new Vector(-2, 0), new Vector(2, 0), Transitions.SINUSOIDAL));
 
         this.defaultComments.push(getString("enemy.invisibleman.comments.random.1"));
         this.defaultComments.push(getString("enemy.invisibleman.comments.random.2"));

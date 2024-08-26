@@ -1,6 +1,6 @@
 import { Vector } from "./math";
 import { drawPolygon } from "./drawing";
-import { STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE } from "fight";
+import { STANDART_TEXT_BOX_POS, STANDART_TEXT_BOX_SIZE } from "./fight";
 
 const BOX_TRANSITION_SPEED = 0.9;
 const POINT_EPSILON = 1e-3;

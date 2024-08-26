@@ -1,17 +1,15 @@
 import { Vector, getRandomInt, clamp } from "./math";
 import { camera, canvas, clearCanvas, FIGHT_IMAGE_SCALING } from "./drawing";
 import { Enemy, ENEMY_SPARED } from "./enemies";
-import { imgHeart } from "./resources";
+import { AnimatedImg, getImage, getAnimation } from "./resources";
 import { drawImage, drawParagraph, TEXT_KEGEL } from "./drawing";
 import { Box } from "./box";
 import { ChoiseBox, Option, CHOICE_RESULT_NONE } from "./choiseBox";
 import { FightButton } from "./fightButton";
-import { imgAct, imgFight, imgItem, imgMercy } from "./resources";
 import { getString } from "./localization";
 import { HitBox, HitState } from "./hitBox";
 import { HealthBox } from "./healthBox";
 import { TextBox } from "./textBox";
-import { animHit } from "./resources";
 import { getRectanglePoints } from "./box";
 import { movePlayer } from "./movement";
 import { checkRoundCollisionWithBox } from "./collisions";
@@ -68,12 +66,12 @@ export enum GameState {
     MAP_EDIT,
 }
 
-export let state = GameState.MAP_EDIT;
+export let state = GameState.FIGHT;
 
 export class Heart {
     pos = new Vector(0, 0);
     collisionRadius = 18;
-    sprite = imgHeart;
+    sprite = getImage("heart.bmp");
     damage = 1;
     defence = 1;
     speedConst = new Vector(2, 2);
@@ -231,9 +229,9 @@ function updateHitInHitState() {
         if (fight.hitBox.state !== HitState.PLAYING) {
             {
                 if (fight.hitBox.state === HitState.LAND_HIT) {
-                    animHit.startAnimation(10, false);
+                    getAnimation("hit.bmp").startAnimation(10, false);
                 }
-                else if (animHit.changeTimer.getTime() === 0) {
+                else if (getAnimation("hit.bmp").changeTimer.getTime() === 0) {
                     let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
                     let xPos = -width / 2 + DISTANCE_BETWEEN_ENEMIES * fight.activeEnemy;
                     let damage = Math.ceil(heart.damage / fight.enemies[fight.activeEnemy].defence * fight.hitBox.value);
@@ -241,7 +239,7 @@ function updateHitInHitState() {
                         damage, fight.enemies[fight.activeEnemy].maxHitpoints);
                     fight.enemies[fight.activeEnemy].hitpoints -= damage;
                 }
-                else if (!animHit.playing && fight.healthbox.ended) {
+                else if (!getAnimation("hit.bmp").playing && fight.healthbox.ended) {
                     if (!winCondition()) {
                         toStateDialogue();
                     }
@@ -291,7 +289,7 @@ function drawEnemy(enemyIndex: number) {
         fight.activeEnemy === enemyIndex) {
         let addPosX = 0;
         //enemy is trembling after hit
-        if (!animHit.playing) {
+        if (!getAnimation("hit.bmp").playing) {
             let tremblePower = Math.floor(fight.healthbox.timer.getTime() / TREMBLE_FREQUENCY);
             addPosX = ((Math.floor(tremblePower) % 2) * 2 - 1) * TREMBLE_AMOUNT * tremblePower;
         }
@@ -331,10 +329,10 @@ function drawElements() {
     }
     if (fight.state === FightState.HIT) {
         fight.hitBox.draw();
-        if (animHit.playing) {
+        if (getAnimation("hit.bmp").playing) {
             let width = fight.enemies.length !== 1 ? DISTANCE_BETWEEN_ENEMIES * (fight.enemies.length - 1) : 0;
             let xPos = -width / 2 + DISTANCE_BETWEEN_ENEMIES * fight.activeEnemy;
-            drawImage(xPos, ENEMIES_POS_Y, 70 * FIGHT_IMAGE_SCALING, 120 * FIGHT_IMAGE_SCALING, 0, animHit);
+            drawImage(xPos, ENEMIES_POS_Y, 70 * FIGHT_IMAGE_SCALING, 120 * FIGHT_IMAGE_SCALING, 0, getAnimation("hit.bmp"));
         }
         if (!fight.healthbox.ended) {
             fight.healthbox.draw();
@@ -403,13 +401,13 @@ class Fight {
     activeEnemy = -1;
 
     buttons: FightButton[] = [new FightButton(new Vector(-canvas.width / 2 + canvas.width / 5, canvas.height / 2 - BUTTON_Y_OFFSET),
-        STANDART_BUTTON_SIZE, getString("fight.interface.fight"), imgFight),
+        STANDART_BUTTON_SIZE, getString("fight.interface.fight"), getImage("fightIcon.bmp")),
     new FightButton(new Vector(-canvas.width / 2 + canvas.width / 5 * 2, canvas.height / 2 - BUTTON_Y_OFFSET),
-        STANDART_BUTTON_SIZE, getString("fight.interface.action"), imgAct),
+        STANDART_BUTTON_SIZE, getString("fight.interface.action"), getImage("actIcon.bmp")),
     new FightButton(new Vector(-canvas.width / 2 + canvas.width / 5 * 3, canvas.height / 2 - BUTTON_Y_OFFSET),
-        STANDART_BUTTON_SIZE, getString("fight.interface.item"), imgItem),
+        STANDART_BUTTON_SIZE, getString("fight.interface.item"), getImage("itemIcon.bmp")),
     new FightButton(new Vector(-canvas.width / 2 + canvas.width / 5 * 4, canvas.height / 2 - BUTTON_Y_OFFSET),
-        STANDART_BUTTON_SIZE, getString("fight.interface.mercy"), imgMercy)];
+        STANDART_BUTTON_SIZE, getString("fight.interface.mercy"), getImage("mercyIcon.bmp"))];
     activeButton = Button.FIGHT;
 
     box: Box = new Box();

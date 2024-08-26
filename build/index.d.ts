@@ -13,6 +13,8 @@ declare module "math" {
         sub(b: Vector): Vector;
         mul(c: number): Vector;
         div(c: number): Vector;
+        round(): Vector;
+        floor(): Vector;
     }
     export function clamp(value: number, min: number, max: number): number;
     export function getRandomFloat(min: number, max: number): number;
@@ -52,28 +54,8 @@ declare module "resources" {
         changeDelay(delay: number): void;
         updateImage(): void;
     }
-    export let imgNone: Img;
-    export let imgHeart: Img;
-    export let imgFight: Img;
-    export let imgAct: Img;
-    export let imgItem: Img;
-    export let imgMercy: Img;
-    export let imgDialogueBox: Img;
-    export let imgDialogueBoxCorner: Img;
-    export let imgDialogueBoxTail: Img;
-    export let imgInvisibleManBoots: Img;
-    export let imgInvisibleManTrench: Img;
-    export let imgInvisibleManHead: Img;
-    export let imgInvisibleManDefeat: Img;
-    export let animHit: AnimatedImg;
-    export let imgLexa: Img;
-    export let imgLexaBack: Img;
-    export let imgLexaSideRight: Img;
-    export let imgLexaSideLeft: Img;
-    export let animLexaWalk: AnimatedImg;
-    export let animLexaWalkBack: AnimatedImg;
-    export let animLexaWalkSideRight: AnimatedImg;
-    export let animLexaWalkSideLeft: AnimatedImg;
+    export function getImage(key: string): Img | AnimatedImg;
+    export function getAnimation(key: string): AnimatedImg;
 }
 declare module "drawing" {
     import { Vector } from "math";
@@ -319,6 +301,7 @@ declare module "collisions" {
 declare module "fight" {
     import { Vector } from "math";
     import { Enemy } from "enemies";
+    import { AnimatedImg } from "resources";
     export const STANDART_TEXT_BOX_SIZE: Vector;
     export const STANDART_TEXT_BOX_POS: Vector;
     export const TEXT_BOX_SIZE_DIFF: Vector;
@@ -331,7 +314,7 @@ declare module "fight" {
     export class Heart {
         pos: Vector;
         collisionRadius: number;
-        sprite: import("resources").Img;
+        sprite: import("resources").Img | AnimatedImg;
         damage: number;
         defence: number;
         speedConst: Vector;
@@ -353,9 +336,6 @@ declare module "box" {
         updateTransition(): void;
         checkTransition(): boolean;
     }
-}
-declare module "wander" {
-    export function loopWander(): void;
 }
 declare module "interactionBox" {
     import { ChoiseBox, Option } from "choiseBox";
@@ -397,24 +377,31 @@ declare module "interactionBox" {
 declare module "location" {
     import { Interaction } from "interactionBox";
     import { Vector } from "math";
-    import { Img } from "resources";
-    export const TILE_SIZE_GAME = 80;
+    export const TILE_SIZE = 16;
+    export const SPRITE_SCALE = 5;
+    export const TILE_SIZE_GAME: number;
     export class Tile {
-        sprite: Img;
-        colidable: boolean;
+        sprite: string;
+        collision: Vector;
         script: () => void;
     }
+    export function getIndex(tileMap: Location, x: number, y: number): number;
+    export function tilePosition(x: number, y: number): Vector;
     export class Interactable {
-        sprite: Img;
+        sprite: string;
         pos: Vector;
         size: Vector;
         interactions: Interaction[];
     }
+    export function drawLocation(location: Location): void;
     export class Location {
         tiles: Tile[];
         size: Vector;
         interactables: Interactable[];
     }
+}
+declare module "wander" {
+    export function loopWander(): void;
 }
 declare module "mapEditor" {
     export function loopEdit(): void;
